@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://vtvweb.github.io/VentanillaTV/sitemap.xml
