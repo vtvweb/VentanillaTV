@@ -53,6 +53,8 @@
         const navbar = document.querySelector('.js-navbar-menu');
         const overlay = document.querySelector('.js-menu-overlay');
 
+        const closeBtn = document.querySelector('.js-navbar-close');
+
         if (toggler && navbar) {
             toggler.addEventListener('click', function () {
                 const expanded = toggler.getAttribute('aria-expanded') === 'true';
@@ -62,14 +64,32 @@
                 document.body.classList.toggle('menu-opened');
             });
 
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () {
+                    toggler.setAttribute('aria-expanded', 'false');
+                    navbar.classList.remove('is-active');
+                    if (overlay) overlay.classList.remove('is-active');
+                    document.body.classList.remove('menu-opened');
+                });
+            }
+
             if (overlay) {
                 overlay.addEventListener('click', function () {
                     toggler.setAttribute('aria-expanded', 'false');
                     navbar.classList.remove('is-active');
-                    overlay.classList.remove('is-active');
+                    if (overlay) overlay.classList.remove('is-active');
                     document.body.classList.remove('menu-opened');
                 });
             }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && navbar.classList.contains('is-active')) {
+                    toggler.setAttribute('aria-expanded', 'false');
+                    navbar.classList.remove('is-active');
+                    if (overlay) overlay.classList.remove('is-active');
+                    document.body.classList.remove('menu-opened');
+                }
+            });
         }
 
         // Submenu dropdown toggles on mobile
@@ -363,7 +383,7 @@
         const track = document.querySelector('.js-ticker-track');
         if (!track) return;
 
-        const items = track.querySelectorAll('.ticker-item');
+        const items = track.querySelectorAll('.ticker-item:not([aria-hidden="true"])');
         const STORAGE_KEY = 'vtv_trending_ticker_data';
 
         if (items.length >= 2) {
@@ -385,7 +405,9 @@
                 if (saved) {
                     const data = JSON.parse(saved);
                     if (Array.isArray(data) && data.length > 0) {
-                        track.innerHTML = data.map(item => `<div class="ticker-item"><a href="${item.url}">${item.title}</a></div>`).join('');
+                        const originalHtml = data.map(item => `<div class="ticker-item"><a href="${item.url}">${item.title}</a></div>`).join('');
+                        const clonedHtml = data.map(item => `<div class="ticker-item" aria-hidden="true"><a href="${item.url}" tabindex="-1">${item.title}</a></div>`).join('');
+                        track.innerHTML = originalHtml + clonedHtml;
                     }
                 }
             } catch (e) {}
