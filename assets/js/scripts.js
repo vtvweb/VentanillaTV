@@ -422,6 +422,7 @@
             closeBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 stickyAd.classList.add('is-hidden');
+                document.body.classList.add('dock-dismissed');
                 setTimeout(function () {
                     stickyAd.style.display = 'none';
                 }, 400);
