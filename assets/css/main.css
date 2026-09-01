@@ -254,6 +254,18 @@ p:last-child {
     transition: background-color 0.3s ease;
 }
 
+.mg-nav-widget-area-back.back-img {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    padding: 0;
+}
+
+.mg-nav-widget-area-back .overlay {
+    width: 100%;
+    padding: 25px 0;
+}
+
 .mg-nav-widget-area-back .container-fluid {
     display: flex;
     justify-content: space-between;
@@ -301,16 +313,24 @@ p:last-child {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    flex: 1 1 500px;
-    max-width: 970px;
-    min-width: 0;
+    max-width: 728px;
+    margin-left: auto;
 }
 
 .header-ad-banner .publii-ad-unit {
     width: 100%;
-    max-width: 970px;
+    max-width: 728px;
     margin-left: auto;
     margin-right: 0;
+}
+
+.header-ad-banner .publii-ad-video,
+.header-ad-banner .publii-ad-image {
+    max-height: 90px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
 /* ==========================================================================
@@ -2308,27 +2328,38 @@ body.is-page-exiting .search-page-content {
 
 .publii-sticky-close {
     position: absolute;
-    top: 4px;
-    right: 8px;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    border: none;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 12px;
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 14px;
-    font-weight: bold;
+    width: 24px;
+    height: 24px;
+    padding: 0;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
     z-index: 10000;
+    box-sizing: border-box;
+}
+
+.publii-sticky-close svg {
+    width: 10px;
+    height: 10px;
+    display: block;
+    stroke: currentColor;
+    pointer-events: none;
 }
 
 .publii-sticky-close:hover {
-    background: rgba(239, 68, 68, 0.9);
+    background: rgba(239, 68, 68, 0.95);
+    border-color: rgba(239, 68, 68, 1);
+    transform: translateY(-50%) scale(1.08);
 }
 
 .publii-inarticle-ad-widget {
