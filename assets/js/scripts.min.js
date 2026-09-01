@@ -399,7 +399,10 @@
         if (stickyAd && closeBtn) {
             closeBtn.addEventListener('click', function (e) {
                 e.preventDefault();
-                stickyAd.style.display = 'none';
+                stickyAd.classList.add('is-hidden');
+                setTimeout(function () {
+                    stickyAd.style.display = 'none';
+                }, 400);
             });
         }
     };
