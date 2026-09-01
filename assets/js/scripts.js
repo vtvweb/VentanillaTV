@@ -33,6 +33,11 @@
         // Sync initial state
         applyTheme(currentTheme);
 
+        // Enable smooth transitions only after initial paint
+        requestAnimationFrame(() => {
+            if (document.body) document.body.classList.add('theme-ready');
+        });
+
         toggleButtons.forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -276,6 +281,129 @@
         dateEl.textContent = now.toLocaleDateString(undefined, options);
     };
 
+    // 10. Smooth Article / Content Transitions (Zero Layout Shift or Jitter)
+    const initPageTransitions = function () {
+        const transitionType = document.documentElement.getAttribute('data-page-transition');
+        if (!transitionType || transitionType === 'none') return;
+
+        const mainContent = document.querySelectorAll('.post-main-box, .feed-stream, .search-page-content');
+        if (!mainContent.length) return;
+
+        // Apply smooth entrance opacity animation
+        mainContent.forEach(el => el.classList.add('is-entering'));
+        setTimeout(() => {
+            mainContent.forEach(el => el.classList.remove('is-entering'));
+        }, 250);
+
+        // Reset state on browser back/forward cache restore
+        window.addEventListener('pageshow', function () {
+            document.body.classList.remove('is-page-exiting');
+            mainContent.forEach(el => {
+                el.classList.remove('is-exiting');
+                el.classList.add('is-entering');
+            });
+            setTimeout(() => {
+                mainContent.forEach(el => el.classList.remove('is-entering'));
+            }, 250);
+        });
+
+        // Intercept internal navigation clicks
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('a');
+            if (!link) return;
+
+            // Don't intercept modified clicks (Ctrl, Shift, Cmd, Alt) or non-left clicks
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                return;
+            }
+
+            // Don't intercept target="_blank"
+            if (link.getAttribute('target') === '_blank') return;
+
+            // Don't intercept download links
+            if (link.hasAttribute('download')) return;
+
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+                return;
+            }
+
+            try {
+                const targetUrl = new URL(link.href, window.location.href);
+                const currentUrl = new URL(window.location.href);
+
+                // Same page hash anchor
+                if (targetUrl.pathname === currentUrl.pathname && targetUrl.search === currentUrl.search && targetUrl.hash) {
+                    return;
+                }
+
+                // Check same origin or local preview file://
+                const isSameOrigin = (targetUrl.origin === currentUrl.origin) || (currentUrl.origin === 'null' && targetUrl.protocol === 'file:');
+                if (!isSameOrigin) return;
+
+                // Trigger exit transition strictly on article content
+                e.preventDefault();
+                document.body.classList.add('is-page-exiting');
+                mainContent.forEach(el => el.classList.add('is-exiting'));
+
+                const styleVal = getComputedStyle(document.documentElement).getPropertyValue('--page-trans-duration');
+                const duration = parseInt(styleVal, 10) || 180;
+
+                setTimeout(() => {
+                    window.location.href = link.href;
+                }, duration);
+            } catch (err) {
+                // Allow browser default navigation if parsing fails
+            }
+        });
+    };
+
+    // 11. Breaking News Ticker Synchronization & Fallback Hydration
+    const initTickerSync = function () {
+        const track = document.querySelector('.js-ticker-track');
+        if (!track) return;
+
+        const items = track.querySelectorAll('.ticker-item');
+        const STORAGE_KEY = 'vtv_trending_ticker_data';
+
+        if (items.length >= 2) {
+            try {
+                const data = Array.from(items).map(item => {
+                    const a = item.querySelector('a');
+                    return {
+                        url: a ? a.getAttribute('href') : '#',
+                        title: a ? a.textContent.trim() : ''
+                    };
+                }).filter(item => item.title);
+                if (data.length > 0) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                }
+            } catch (e) {}
+        } else {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (Array.isArray(data) && data.length > 0) {
+                        track.innerHTML = data.map(item => `<div class="ticker-item"><a href="${item.url}">${item.title}</a></div>`).join('');
+                    }
+                }
+            } catch (e) {}
+        }
+    };
+
+    // 12. Sticky Mobile Ad Dismissal
+    const initStickyAds = function () {
+        const stickyAd = document.querySelector('.js-sticky-mobile-ad');
+        const closeBtn = document.querySelector('.js-sticky-close');
+        if (stickyAd && closeBtn) {
+            closeBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                stickyAd.style.display = 'none';
+            });
+        }
+    };
+
     // Run on DOM ready
     document.addEventListener('DOMContentLoaded', function () {
         initThemeToggle();
@@ -287,5 +415,8 @@
         initSliders();
         initCopyLink();
         initLiveDate();
+        initPageTransitions();
+        initTickerSync();
+        initStickyAds();
     });
 })();
