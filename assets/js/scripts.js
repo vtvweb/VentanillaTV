@@ -392,10 +392,10 @@
         }
     };
 
-    // 12. Sticky Mobile Ad Dismissal
+    // 12. Sticky Mobile Dock Dismissal
     const initStickyAds = function () {
-        const stickyAd = document.querySelector('.js-sticky-mobile-ad');
-        const closeBtn = document.querySelector('.js-sticky-close');
+        const stickyAd = document.querySelector('.js-sticky-dock, .js-sticky-mobile-ad');
+        const closeBtn = document.querySelector('.js-dock-close, .js-sticky-close');
         if (stickyAd && closeBtn) {
             closeBtn.addEventListener('click', function (e) {
                 e.preventDefault();

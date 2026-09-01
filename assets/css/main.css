@@ -291,17 +291,33 @@ p:last-child {
     max-width: 100%;
 }
 
+.site-logo {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
 .site-logo img {
-    max-height: 65px;
+    height: 60px;
+    max-height: 75px;
     width: auto;
+    max-width: 260px;
     object-fit: contain;
     display: block;
     transition: filter 0.3s ease;
 }
 
-[data-theme="dark"] .mg-nav-widget-area-back .site-logo img,
+[data-theme="dark"] .site-logo img,
+html.dark .site-logo img,
+body.dark .site-logo img,
 .mg-footer-widget-area .site-logo img {
     filter: brightness(0) invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .site-logo img {
+        filter: brightness(0) invert(1);
+    }
 }
 
 .site-title {
@@ -324,6 +340,7 @@ p:last-child {
     margin-bottom: 0;
 }
 
+.header-spotlight-slot,
 .header-ad-banner {
     display: flex;
     justify-content: flex-end;
@@ -332,6 +349,7 @@ p:last-child {
     margin-left: auto;
 }
 
+.header-spotlight-slot .vtv-spotlight-frame,
 .header-ad-banner .publii-ad-unit {
     width: 100%;
     max-width: 728px;
@@ -339,6 +357,8 @@ p:last-child {
     margin-right: 0;
 }
 
+.header-spotlight-slot .vtv-spotlight-media,
+.header-spotlight-slot .vtv-spotlight-img,
 .header-ad-banner .publii-ad-video,
 .header-ad-banner .publii-ad-image {
     max-height: 90px;
@@ -572,7 +592,7 @@ body.theme-ready .theme-switch-btn .switch-knob {
    Breadcrumb Navigation
    ========================================================================== */
 .mg-breadcrumb-section {
-    padding: 12px 0 8px;
+    padding: 14px 0 10px;
     background-color: transparent;
 }
 
@@ -582,7 +602,7 @@ body.theme-ready .theme-switch-btn .switch-knob {
     flex-wrap: wrap;
     gap: 6px;
     font-size: 13px;
-    color: var(--text-muted, #64748b);
+    color: var(--text-muted);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -590,73 +610,46 @@ body.theme-ready .theme-switch-btn .switch-knob {
 }
 
 .breadcrumb-list a {
-    color: var(--text-muted, #64748b);
+    color: var(--text-muted);
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .breadcrumb-list a:hover {
-    color: var(--pri-color, #D73A42);
+    color: var(--pri-color);
     text-decoration: none;
 }
 
 .breadcrumb-list span {
-    color: var(--text-muted, #64748b);
+    color: var(--text-muted);
     font-weight: 500;
 }
 
 .breadcrumb-list .separator {
-    color: var(--text-light, #94a3b8);
+    color: var(--text-light);
     margin: 0 2px;
     font-size: 12px;
     font-weight: 500;
     user-select: none;
 }
 
-.breadcrumb-list span[aria-current="page"],
-.breadcrumb-list .is-current {
-    color: var(--heading-color, #0f172a);
+.breadcrumb-list span[aria-current="page"] {
+    color: var(--heading-color);
     font-weight: 700;
 }
 
-[data-theme="dark"] .breadcrumb-list,
-html.dark .breadcrumb-list,
-body.dark .breadcrumb-list {
-    color: var(--text-muted, #94a3b8);
-}
-
-[data-theme="dark"] .breadcrumb-list a,
-html.dark .breadcrumb-list a,
-body.dark .breadcrumb-list a {
-    color: var(--text-muted, #94a3b8);
-}
-
+/* Dark mode hover uses accent color */
 [data-theme="dark"] .breadcrumb-list a:hover,
 html.dark .breadcrumb-list a:hover,
 body.dark .breadcrumb-list a:hover {
-    color: var(--pri-color-dark, #42a5f5);
+    color: var(--pri-color-dark);
 }
 
-[data-theme="dark"] .breadcrumb-list span,
-html.dark .breadcrumb-list span,
-body.dark .breadcrumb-list span {
-    color: var(--text-muted, #94a3b8);
-}
-
-[data-theme="dark"] .breadcrumb-list .separator,
-html.dark .breadcrumb-list .separator,
-body.dark .breadcrumb-list .separator {
-    color: var(--text-light, #64748b);
-}
-
-[data-theme="dark"] .breadcrumb-list span[aria-current="page"],
-html.dark .breadcrumb-list span[aria-current="page"],
-body.dark .breadcrumb-list span[aria-current="page"],
-[data-theme="dark"] .breadcrumb-list .is-current,
-html.dark .breadcrumb-list .is-current,
-body.dark .breadcrumb-list .is-current {
-    color: #f8fafc;
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .breadcrumb-list a:hover {
+        color: var(--pri-color-dark);
+    }
 }
 
 /* ==========================================================================
@@ -679,15 +672,27 @@ body.dark .breadcrumb-list .is-current {
     gap: 8px;
     background-color: var(--pri-color, #2196f3);
     color: #ffffff;
-    padding: 10px 24px 10px 16px;
-    font-size: 13px;
+    padding: 12px 28px 12px 16px;
+    font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     position: relative;
     flex-shrink: 0;
-    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
-    -webkit-clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+    -webkit-clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+}
+
+.trending-badge svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
 }
 
 .trending-badge::after {
@@ -1929,12 +1934,15 @@ footer {
     margin: 40px 0 20px;
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
 .pagination {
     display: inline-flex;
     gap: 6px;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .pagination-item {
@@ -1943,20 +1951,50 @@ footer {
     justify-content: center;
     min-width: 38px;
     height: 38px;
-    padding: 0 10px;
+    padding: 0 12px;
     border-radius: 4px;
     background-color: var(--card-bg, #ffffff);
     border: 1px solid var(--border-color, #e2e8f0);
     color: var(--text-main, #212529);
     font-weight: 700;
     font-size: 13px;
-    transition: all 0.2s ease;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    user-select: none;
+}
+
+.pagination-item svg {
+    display: block;
+    fill: currentColor;
+    pointer-events: none;
 }
 
 .pagination-item:hover, .pagination-item.is-current {
     background-color: var(--pri-color, #D73A42);
     border-color: var(--pri-color, #D73A42);
     color: #ffffff;
+}
+
+.pagination-item.is-current {
+    cursor: default;
+    pointer-events: none;
+}
+
+.pagination-item.is-ellipsis {
+    border: none;
+    background: transparent;
+    cursor: default;
+    color: var(--text-light, #718096);
+    min-width: 24px;
+    padding: 0 4px;
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+.pagination-item.is-ellipsis:hover {
+    background: transparent;
+    color: var(--text-light, #718096);
+    border: none;
 }
 
 /* ==========================================================================
@@ -2282,8 +2320,9 @@ body.is-page-exiting .search-page-content {
 }
 
 /* ==========================================================================
-   26. Publii Responsive Ad Units & Media Banners
+   26. Publii Responsive Media Showcase & Spotlight Slots
    ========================================================================== */
+.vtv-spotlight-frame,
 .publii-ad-unit {
     position: relative;
     margin: 0 auto;
@@ -2293,6 +2332,7 @@ body.is-page-exiting .search-page-content {
     width: 100%;
 }
 
+.vtv-spotlight-tag,
 .publii-ad-label {
     display: block;
     font-size: 10px;
@@ -2306,15 +2346,18 @@ body.is-page-exiting .search-page-content {
     user-select: none;
 }
 
+.vtv-slot-header,
 .publii-ad-header {
     margin: 0 0 0 auto;
 }
 
+.vtv-slot-header .vtv-spotlight-tag,
 .publii-ad-header .publii-ad-label {
     text-align: right;
     margin-bottom: 4px;
 }
 
+.vtv-spotlight-media,
 .publii-ad-video {
     width: 100%;
     height: auto;
@@ -2325,6 +2368,7 @@ body.is-page-exiting .search-page-content {
     object-fit: cover;
 }
 
+.vtv-spotlight-img,
 .publii-ad-image {
     width: 100%;
     height: auto;
@@ -2334,6 +2378,7 @@ body.is-page-exiting .search-page-content {
     object-fit: cover;
 }
 
+.vtv-spotlight-link,
 .publii-ad-link {
     display: block;
     width: 100%;
@@ -2341,6 +2386,7 @@ body.is-page-exiting .search-page-content {
     line-height: 0;
 }
 
+.sidebar-spotlight-box,
 .publii-sidebar-ad-widget {
     padding: 0 !important;
     background: transparent !important;
@@ -2351,11 +2397,13 @@ body.is-page-exiting .search-page-content {
     margin-bottom: 30px;
 }
 
+.sidebar-spotlight-box .vtv-spotlight-frame,
 .publii-sidebar-ad-widget .publii-ad-unit {
     width: 100%;
     max-width: 100%;
 }
 
+.vtv-sticky-dock,
 .publii-sticky-mobile-ad {
     position: fixed;
     bottom: 0;
@@ -2378,6 +2426,7 @@ body.is-page-exiting .search-page-content {
     will-change: transform, opacity;
 }
 
+.vtv-sticky-dock.is-hidden,
 .publii-sticky-mobile-ad.is-hidden {
     transform: translateY(110%);
     opacity: 0;
@@ -2385,6 +2434,7 @@ body.is-page-exiting .search-page-content {
     pointer-events: none;
 }
 
+.vtv-dock-close,
 .publii-sticky-close {
     position: absolute;
     top: 50%;
@@ -2407,6 +2457,7 @@ body.is-page-exiting .search-page-content {
     box-sizing: border-box;
 }
 
+.vtv-dock-close svg,
 .publii-sticky-close svg {
     width: 10px;
     height: 10px;
@@ -2415,12 +2466,14 @@ body.is-page-exiting .search-page-content {
     pointer-events: none;
 }
 
+.vtv-dock-close:hover,
 .publii-sticky-close:hover {
     background: rgba(239, 68, 68, 0.95);
     border-color: rgba(239, 68, 68, 1);
     transform: translateY(-50%) scale(1.08);
 }
 
+.article-spotlight-box,
 .publii-inarticle-ad-widget {
     margin: 25px auto;
     padding: 10px 0;
@@ -2429,12 +2482,14 @@ body.is-page-exiting .search-page-content {
 }
 
 @media (max-width: 768px) {
+    .header-spotlight-slot,
     .header-ad-banner {
         width: 100%;
         justify-content: center;
         margin-top: 15px;
     }
     
+    .vtv-slot-header .vtv-spotlight-tag,
     .publii-ad-header .publii-ad-label {
         text-align: center;
     }
