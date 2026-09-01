@@ -2,10 +2,10 @@
     "version": "https://jsonfeed.org/version/1",
     "title": "Ventanilla TV",
     "description": "",
-    "home_page_url": "https://vtvweb.github.io/VentanillaTV",
-    "feed_url": "https://vtvweb.github.io/VentanillaTV/feed.json",
+    "home_page_url": "https://ventanillatv.pe",
+    "feed_url": "https://ventanillatv.pe/feed.json",
     "user_comment": "",
-    "icon": "https://vtvweb.github.io/VentanillaTV/media/website/LogoCentral.svg",
+    "icon": "https://ventanillatv.pe/media/website/LogoCentral.svg",
     "author": {
         "name": "Editorial"
     },
