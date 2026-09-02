@@ -398,11 +398,33 @@ body.dark .site-logo img,
     justify-content: space-between;
     align-items: center;
     min-height: 52px;
+    overflow: hidden;
 }
 
 .navbar__nav-wrap {
     display: flex;
     align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.menu-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .navbar__home-btn {
@@ -810,7 +832,7 @@ body.dark .breadcrumb-list a:hover {
     align-items: center;
     width: max-content;
     will-change: transform;
-    animation: marquee 32s linear infinite;
+    animation: marquee var(--ticker-speed, 60s) linear infinite;
 }
 
 .ticker-track:hover {
@@ -2410,6 +2432,32 @@ body.dark .tab-nav-header {
         max-width: 100%;
         justify-content: center;
         margin: 10px auto 0;
+    }
+
+    /* Compact WhatsApp button when drawer is active so actions always fit */
+    .btn-bell span {
+        display: none;
+    }
+
+    .btn-bell {
+        padding: 0;
+        width: 36px;
+        min-width: 36px;
+        max-width: 36px;
+        height: 36px;
+        min-height: 36px;
+        max-height: 36px;
+        border-radius: 50%;
+        justify-content: center;
+    }
+
+    .btn-bell svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .navbar__actions {
+        gap: 8px;
     }
 }
 
