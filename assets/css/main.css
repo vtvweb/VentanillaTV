@@ -298,25 +298,41 @@ p:last-child {
 }
 
 .site-logo img {
-    height: 60px;
+    height: 65px;
     max-height: 75px;
     width: auto;
     max-width: 260px;
     object-fit: contain;
     display: block;
-    transition: filter 0.3s ease;
+    transition: filter 0.3s ease, height 0.2s ease;
+}
+
+@media (min-width: 992px) {
+    .site-logo img {
+        height: 110px;
+        max-height: 125px;
+        max-width: 360px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .site-logo img {
+        height: 120px;
+        max-height: 135px;
+        max-width: 400px;
+    }
 }
 
 [data-theme="dark"] .site-logo img,
 html.dark .site-logo img,
 body.dark .site-logo img,
 .mg-footer-widget-area .site-logo img {
-    filter: brightness(0) invert(1);
+    filter: none;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .site-logo img {
-        filter: brightness(0) invert(1);
+        filter: none;
     }
 }
 
@@ -345,14 +361,14 @@ body.dark .site-logo img,
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    max-width: 728px;
+    max-width: 970px;
     margin-left: auto;
 }
 
 .header-spotlight-slot .vtv-spotlight-frame,
 .header-ad-banner .publii-ad-unit {
     width: 100%;
-    max-width: 728px;
+    max-width: 970px;
     margin-left: auto;
     margin-right: 0;
 }
@@ -361,11 +377,11 @@ body.dark .site-logo img,
 .header-spotlight-slot .vtv-spotlight-img,
 .header-ad-banner .publii-ad-video,
 .header-ad-banner .publii-ad-image {
-    max-height: 90px;
+    max-height: 180px;
     width: 100%;
     height: auto;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 /* ==========================================================================
@@ -398,15 +414,13 @@ body.dark .site-logo img,
     justify-content: space-between;
     align-items: center;
     min-height: 52px;
-    overflow: hidden;
 }
 
 .navbar__nav-wrap {
     display: flex;
     align-items: center;
-    flex-shrink: 1;
+    flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
 }
 
 .menu-overlay {
@@ -433,6 +447,7 @@ body.dark .site-logo img,
     justify-content: center;
     width: 52px;
     height: 52px;
+    flex-shrink: 0;
     background-color: rgba(0, 0, 0, 0.15);
     color: #ffffff;
     transition: background-color 0.2s ease;
@@ -446,6 +461,26 @@ body.dark .site-logo img,
 .navbar__drawer {
     display: flex;
     align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 1025px) {
+    .navbar__drawer {
+        overflow-x: auto;
+        overflow-y: visible;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .navbar__drawer::-webkit-scrollbar {
+        display: none;
+    }
+
+    .navbar__menu {
+        flex-shrink: 0;
+    }
 }
 
 .navbar__drawer-header {
@@ -458,20 +493,23 @@ body.dark .site-logo img,
     list-style: none;
     margin: 0;
     padding: 0;
+    flex-wrap: nowrap;
 }
 
 .navbar__menu > li {
     position: relative;
+    flex-shrink: 0;
 }
 
 .navbar__menu > li > a {
     display: block;
-    padding: 16px 18px;
+    padding: 16px 13px;
     color: #ffffff;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
     transition: all 0.2s ease;
 }
 
@@ -710,8 +748,20 @@ body.theme-ready .theme-switch-btn .switch-knob {
    Breadcrumb Navigation
    ========================================================================== */
 .mg-breadcrumb-section {
-    padding: 14px 0 10px;
+    padding: 10px 0 0;
     background-color: transparent;
+}
+
+/* Eliminate excessive gap between breadcrumb section and site-main */
+.mg-breadcrumb-section + .site-main {
+    padding-top: 10px;
+}
+
+/* Tighten ticker spacing when immediately following breadcrumbs */
+.mg-breadcrumb-section + .site-main > .container-fluid > .mg-latest-news-sec:first-child,
+.site-main > .container-fluid > .mg-latest-news-sec:first-child {
+    margin-top: 4px;
+    margin-bottom: 20px;
 }
 
 .breadcrumb-list {
@@ -1949,7 +1999,6 @@ footer {
 
 .mg-footer-bottom-area .container-fluid {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 15px;
@@ -1970,6 +2019,96 @@ footer {
 
 .footer-menu-list a:hover {
     color: #ffffff;
+}
+
+/* Footer Social Alignment Variants (Desktop) */
+@media (min-width: 769px) {
+    /* 1. Center alignment (Default & Recommended) */
+    .mg-footer-bottom-area.is-social-center .container-fluid {
+        justify-content: space-between;
+    }
+
+    .mg-footer-bottom-area.is-social-center .footer-copyright {
+        order: 1;
+        flex: 1 1 0;
+    }
+
+    .mg-footer-bottom-area.is-social-center .footer-social-list {
+        order: 2;
+        flex: 0 0 auto;
+        margin: 0 auto;
+        justify-content: center;
+    }
+
+    .mg-footer-bottom-area.is-social-center .footer-menu-list {
+        order: 3;
+        flex: 1 1 0;
+        justify-content: flex-end;
+        padding-right: 68px; /* Safe space from .back-to-top button */
+    }
+
+    /* Balanced 3-column distribution when no footer menu is configured */
+    .mg-footer-bottom-area.is-social-center .container-fluid:not(:has(.footer-menu-list))::after {
+        content: "";
+        order: 3;
+        flex: 1 1 0;
+        pointer-events: none;
+    }
+
+    /* 2. Right alignment (with safe spacing) */
+    .mg-footer-bottom-area.is-social-right .container-fluid {
+        justify-content: space-between;
+    }
+
+    .mg-footer-bottom-area.is-social-right .footer-copyright {
+        order: 1;
+    }
+
+    .mg-footer-bottom-area.is-social-right .footer-menu-list {
+        order: 2;
+        margin: 0 auto;
+    }
+
+    .mg-footer-bottom-area.is-social-right .footer-social-list {
+        order: 3;
+        margin-left: auto;
+        justify-content: flex-end;
+        padding-right: 68px; /* Safe spacing: Back to top button never overlaps */
+    }
+
+    /* 3. Left alignment */
+    .mg-footer-bottom-area.is-social-left .container-fluid {
+        justify-content: flex-start;
+        gap: 24px;
+    }
+
+    .mg-footer-bottom-area.is-social-left .footer-social-list {
+        order: 1;
+        justify-content: flex-start;
+    }
+
+    .mg-footer-bottom-area.is-social-left .footer-copyright {
+        order: 2;
+    }
+
+    .mg-footer-bottom-area.is-social-left .footer-menu-list {
+        order: 3;
+        margin-left: auto;
+        padding-right: 68px;
+    }
+
+    /* 4. Hidden */
+    .mg-footer-bottom-area.is-social-none .footer-social-list {
+        display: none !important;
+    }
+
+    .mg-footer-bottom-area.is-social-none .container-fluid {
+        justify-content: space-between;
+    }
+
+    .mg-footer-bottom-area.is-social-none .footer-menu-list {
+        padding-right: 68px;
+    }
 }
 
 /* Back to Top Floating Button */
@@ -2010,17 +2149,24 @@ footer {
 /* ==========================================================================
    16. Search Modal Overlay
    ========================================================================== */
+html.no-scroll {
+    overflow: hidden;
+}
+
 .search-modal {
     position: fixed;
     inset: 0;
-    background-color: rgba(10, 14, 24, 0.95);
+    background-color: rgba(10, 14, 24, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 10000;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: pointer;
 }
 
 .search-modal.is-visible {
@@ -2032,12 +2178,13 @@ footer {
     width: 90%;
     max-width: 650px;
     position: relative;
-    transform: scale(0.95);
-    transition: transform 0.3s ease;
+    transform: scale(0.92) translateY(12px);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    cursor: default;
 }
 
 .search-modal.is-visible .search-modal__inner {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
 }
 
 .search-modal__close {
@@ -2053,13 +2200,38 @@ footer {
     justify-content: center;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.1);
-    transition: background-color 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
 }
 
 .search-modal__close:hover {
     background-color: var(--pri-color, #D73A42);
+    border-color: var(--pri-color, #D73A42);
 }
 
+/* --- Search modal header --- */
+.search-modal__header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.search-modal__title {
+    display: block;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.search-modal__subtitle {
+    display: block;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+/* --- Old static form classes (kept for backwards compat) --- */
 .search-modal__form {
     display: flex;
     border-bottom: 2px solid var(--pri-color, #D73A42);
@@ -2083,6 +2255,239 @@ footer {
     padding: 0 15px;
     display: flex;
     align-items: center;
+}
+
+/* --- Plugin-injected search form inside modal (.search__form) --- */
+.search-modal .search__form {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 2px solid var(--pri-color, #D73A42);
+    gap: 0;
+}
+
+.search-modal .search__input {
+    flex: 1;
+    background: transparent;
+    color: #ffffff;
+    font-size: 1.35rem;
+    padding: 14px 16px;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    min-width: 0;
+}
+
+.search-modal .search__input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.search-modal .search__input:focus {
+    outline: none;
+}
+
+.search-modal .search__button {
+    color: #ffffff;
+    background-color: var(--pri-color, #D73A42);
+    border: none;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+    border-radius: 0;
+}
+
+.search-modal .search__button:hover {
+    background-color: var(--secondary-color, #1a2548);
+}
+
+/* ==========================================================================
+   16b. Search Results Page Styles
+   ========================================================================== */
+
+/* --- Plugin-injected search page form --- */
+.search-page-content {
+    padding: 10px 0 30px;
+}
+
+.search-page-form {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.search-page-input {
+    flex: 1 1 250px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 4px;
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-color, #333333);
+    outline: none;
+    transition: border-color 0.2s ease;
+    font-family: inherit;
+}
+
+.search-page-input:focus {
+    border-color: var(--pri-color, #D73A42);
+}
+
+.search-page-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--pri-color, #D73A42);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.search-page-button:hover {
+    background-color: var(--secondary-color, #1a2548);
+}
+
+.search-page-no-results {
+    color: var(--text-muted, #888);
+    font-style: italic;
+    margin-top: 15px;
+}
+
+/* --- Google CSE (Programmable Search) result overrides --- */
+.search-page-content .gsc-control-cse {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+}
+
+.search-page-content .gsc-result-info {
+    color: var(--text-muted, #888) !important;
+    padding-left: 0 !important;
+    font-size: 0.85rem !important;
+}
+
+.search-page-content .gs-title,
+.search-page-content .gs-title a {
+    color: var(--pri-color, #2196f3) !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    font-size: 1.1rem !important;
+}
+
+.search-page-content .gs-title a:hover {
+    text-decoration: underline !important;
+}
+
+.search-page-content .gs-snippet {
+    color: var(--text-color, #333) !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+}
+
+.search-page-content .gsc-url-top,
+.search-page-content .gs-visibleUrl {
+    color: var(--text-muted, #888) !important;
+    font-size: 0.8rem !important;
+}
+
+.search-page-content .gsc-cursor-box {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.search-page-content .gsc-cursor-page {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 0 3px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 4px;
+    color: var(--text-color, #333) !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.search-page-content .gsc-cursor-page:hover {
+    background-color: var(--pri-color, #2196f3);
+    color: #fff !important;
+    border-color: var(--pri-color, #2196f3);
+}
+
+.search-page-content .gsc-cursor-current-page {
+    background-color: var(--pri-color, #2196f3);
+    color: #fff !important;
+    border-color: var(--pri-color, #2196f3);
+    font-weight: 700;
+}
+
+.search-page-content .gsc-webResult.gsc-result {
+    border-bottom: 1px solid var(--border-color, #eee);
+    padding: 16px 0;
+}
+
+.search-page-content .gsc-above-wrapper-area {
+    border-bottom: 1px solid var(--border-color, #eee);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* --- Dark mode overrides for Google CSE --- */
+[data-theme="dark"] .search-page-input {
+    background-color: var(--card-bg, #1e2535);
+    border-color: var(--border-color, #334155);
+    color: var(--text-color, #e2e8f0);
+}
+
+[data-theme="dark"] .search-page-content .gsc-control-cse {
+    background-color: transparent !important;
+}
+
+[data-theme="dark"] .search-page-content .gsc-result-info {
+    color: var(--text-muted, #94a3b8) !important;
+}
+
+[data-theme="dark"] .search-page-content .gs-snippet {
+    color: var(--text-color, #cbd5e1) !important;
+}
+
+[data-theme="dark"] .search-page-content .gs-title,
+[data-theme="dark"] .search-page-content .gs-title a {
+    color: var(--pri-color, #42a5f5) !important;
+}
+
+[data-theme="dark"] .search-page-content .gsc-url-top,
+[data-theme="dark"] .search-page-content .gs-visibleUrl {
+    color: var(--text-muted, #64748b) !important;
+}
+
+[data-theme="dark"] .search-page-content .gsc-cursor-page {
+    border-color: var(--border-color, #334155);
+    color: var(--text-color, #cbd5e1) !important;
+}
+
+[data-theme="dark"] .search-page-content .gsc-webResult.gsc-result {
+    border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .search-page-content .gsc-above-wrapper-area {
+    border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .search-page-no-results {
+    color: var(--text-muted, #94a3b8);
 }
 
 /* ==========================================================================
@@ -2208,6 +2613,7 @@ footer {
    ========================================================================== */
 [data-theme="dark"] .mg-nav-widget-area-back,
 body.dark .mg-nav-widget-area-back {
+    background-color: var(--card-bg, #181d27);
     border-bottom-color: var(--border-color, #262f40);
 }
 
@@ -2234,6 +2640,59 @@ body.dark .tab-nav-header {
 /* ==========================================================================
    20. Responsive Media Queries
    ========================================================================== */
+
+/* Responsive adjustments for Desktop and Laptop screen resizing */
+@media (max-width: 1360px) {
+    .navbar__menu > li > a {
+        padding: 16px 10px;
+        font-size: 13px;
+        letter-spacing: 0.15px;
+    }
+    .navbar__actions {
+        gap: 10px;
+    }
+    .btn-bell {
+        padding: 8px 12px;
+        font-size: 11.5px;
+    }
+}
+
+@media (max-width: 1240px) {
+    .navbar__menu > li > a {
+        padding: 16px 8px;
+        font-size: 12.5px;
+        letter-spacing: 0px;
+    }
+    .navbar__actions {
+        gap: 8px;
+    }
+    .navbar__actions .btn-bell span {
+        display: none;
+    }
+    .navbar__actions .btn-bell {
+        padding: 0;
+        width: 36px;
+        min-width: 36px;
+        max-width: 36px;
+        height: 36px;
+        min-height: 36px;
+        max-height: 36px;
+        border-radius: 50%;
+        justify-content: center;
+    }
+    .navbar__actions .btn-bell svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 1120px) {
+    .navbar__menu > li > a {
+        padding: 16px 6px;
+        font-size: 12px;
+    }
+}
+
 @media (max-width: 1024px) {
     .content-area.with-sidebar {
         max-width: 100%;
@@ -2554,12 +3013,36 @@ body.dark .tab-nav-header {
         gap: 14px;
     }
 
-    .footer-menu-list {
+    .mg-footer-bottom-area.is-social-center .container-fluid:not(:has(.footer-menu-list))::after {
+        display: none;
+    }
+
+    .mg-footer-bottom-area .footer-copyright,
+    .mg-footer-bottom-area .footer-menu-list,
+    .mg-footer-bottom-area .footer-social-list,
+    .mg-footer-bottom-area .top-social-list {
+        flex: 0 0 auto;
+        min-width: 0;
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        padding-right: 0;
+        margin: 0;
+    }
+
+    .mg-footer-bottom-area .footer-copyright {
+        order: 1;
+    }
+
+    .mg-footer-bottom-area .footer-menu-list {
+        order: 2;
         justify-content: center;
         flex-wrap: wrap;
     }
 
+    .mg-footer-bottom-area .footer-social-list,
     .mg-footer-bottom-area .top-social-list {
+        order: 3;
         justify-content: center;
     }
 }
@@ -2777,33 +3260,44 @@ body.is-page-exiting .search-page-content {
     pointer-events: none;
 }
 
+/* Sticky Dock Ad Wrapper: anchors close button directly to ad bounds */
+.vtv-sticky-dock-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
 .vtv-dock-close,
 .publii-sticky-close {
     position: absolute;
     top: -12px;
-    right: 8px;
+    right: -10px;
     background: #1e293b;
     color: #ffffff;
-    border: 2px solid rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.35);
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     padding: 0;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
     transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
-    z-index: 10000;
+    z-index: 10002;
     box-sizing: border-box;
 }
 
 .vtv-dock-close svg,
 .publii-sticky-close svg {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     display: block;
     stroke: currentColor;
     pointer-events: none;
@@ -2814,6 +3308,109 @@ body.is-page-exiting .search-page-content {
     background: rgba(239, 68, 68, 0.95);
     border-color: rgba(239, 68, 68, 1);
     transform: scale(1.1);
+}
+
+/* Fallback if close button is a direct child of .vtv-sticky-dock */
+.vtv-sticky-dock > .vtv-dock-close,
+.publii-sticky-mobile-ad > .publii-sticky-close {
+    right: calc(50% - 364px - 14px);
+}
+
+/* Desktop: scale ad to full leaderboard presence so it is prominent and readable */
+@media (min-width: 769px) {
+    .vtv-sticky-dock-wrap {
+        width: 728px;
+        max-width: 92vw;
+    }
+
+    .vtv-sticky-dock .vtv-slot-mobileSticky,
+    .publii-sticky-mobile-ad .vtv-slot-mobileSticky {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .vtv-sticky-dock .vtv-slot-mobileSticky .vtv-spotlight-link,
+    .publii-sticky-mobile-ad .vtv-slot-mobileSticky .publii-ad-link {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .vtv-sticky-dock .vtv-slot-mobileSticky .vtv-spotlight-media,
+    .vtv-sticky-dock .vtv-slot-mobileSticky .vtv-spotlight-img,
+    .publii-sticky-mobile-ad .vtv-slot-mobileSticky .vtv-spotlight-media,
+    .publii-sticky-mobile-ad .vtv-slot-mobileSticky .vtv-spotlight-img {
+        width: 100% !important;
+        height: 90px !important;
+        min-height: 90px !important;
+        max-height: 90px !important;
+        object-fit: cover !important;
+    }
+
+    /* Desktop back-to-top floats safely above the sticky dock */
+    body:has(.vtv-sticky-dock:not(.is-hidden):not(.is-dock-receded)) .back-to-top,
+    body:has(.publii-sticky-mobile-ad:not(.is-hidden):not(.is-dock-receded)) .back-to-top {
+        bottom: 110px;
+    }
+
+    body.dock-dismissed .back-to-top,
+    body.dock-at-footer .back-to-top,
+    body:has(.vtv-sticky-dock.is-hidden) .back-to-top,
+    body:has(.vtv-sticky-dock.is-dock-receded) .back-to-top,
+    body:has(.publii-sticky-mobile-ad.is-hidden) .back-to-top,
+    body:has(.publii-sticky-mobile-ad.is-dock-receded) .back-to-top {
+        bottom: 24px;
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Extra prominence on large PC desktop screens */
+    .vtv-sticky-dock-wrap {
+        width: 860px;
+        max-width: 90vw;
+    }
+
+    .vtv-sticky-dock .vtv-slot-mobileSticky .vtv-spotlight-media,
+    .vtv-sticky-dock .vtv-slot-mobileSticky .vtv-spotlight-img,
+    .publii-sticky-mobile-ad .vtv-slot-mobileSticky .vtv-spotlight-media,
+    .publii-sticky-mobile-ad .vtv-slot-mobileSticky .vtv-spotlight-img {
+        height: 96px !important;
+        min-height: 96px !important;
+        max-height: 96px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .vtv-sticky-dock-wrap {
+        max-width: 340px;
+    }
+    .vtv-dock-close,
+    .publii-sticky-close {
+        top: -10px;
+        right: 0;
+    }
+}
+
+/* Smooth auto-recede when approaching the footer */
+.vtv-sticky-dock.is-dock-receded,
+.publii-sticky-mobile-ad.is-dock-receded {
+    transform: translateY(115%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+/* Footer bottom clearance: ensures footer content is never hidden behind the dock */
+body:not(.dock-dismissed) footer {
+    padding-bottom: 120px;
+}
+
+body.dock-dismissed footer,
+body.dock-at-footer footer,
+body:has(.vtv-sticky-dock.is-hidden) footer,
+body:has(.vtv-sticky-dock.is-dock-receded) footer,
+body:has(.publii-sticky-mobile-ad.is-hidden) footer,
+body:has(.publii-sticky-mobile-ad.is-dock-receded) footer {
+    padding-bottom: 0;
 }
 
 .article-spotlight-box,

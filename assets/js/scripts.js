@@ -27,6 +27,15 @@
                 if (document.body) document.body.classList.remove('dark');
                 toggleButtons.forEach(btn => btn.classList.remove('is-dark'));
             }
+            document.querySelectorAll('.site-logo img').forEach(img => {
+                const isFooter = img.closest('.mg-footer-widget-area');
+                const base = img.src.split('#')[0];
+                if (theme === 'dark' || isFooter) {
+                    if (!img.src.includes('#dark')) img.src = base + '#dark';
+                } else {
+                    if (img.src.includes('#dark')) img.src = base;
+                }
+            });
             localStorage.setItem('newsup_theme', theme);
         };
 
@@ -90,6 +99,15 @@
                     document.body.classList.remove('menu-opened');
                 }
             });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 1024 && navbar.classList.contains('is-active')) {
+                    toggler.setAttribute('aria-expanded', 'false');
+                    navbar.classList.remove('is-active');
+                    if (overlay) overlay.classList.remove('is-active');
+                    document.body.classList.remove('menu-opened');
+                }
+            });
         }
 
         // Submenu dropdown toggles on mobile
@@ -116,21 +134,25 @@
         const searchOpeners = document.querySelectorAll('.js-search-toggle');
         const searchModal = document.querySelector('.js-search-modal');
         const searchCloser = document.querySelector('.js-search-close');
-        const searchInput = document.querySelector('.js-search-input');
 
         if (!searchModal) return;
 
         const openSearch = function () {
             searchModal.classList.add('is-visible');
+            searchModal.setAttribute('aria-hidden', 'false');
             document.body.classList.add('search-opened');
-            if (searchInput) {
-                setTimeout(() => searchInput.focus(), 150);
+            document.documentElement.classList.add('no-scroll');
+            const input = searchModal.querySelector('input[type="search"], .search__input, .search-modal__input, input[type="text"]');
+            if (input) {
+                setTimeout(() => input.focus(), 120);
             }
         };
 
         const closeSearch = function () {
             searchModal.classList.remove('is-visible');
+            searchModal.setAttribute('aria-hidden', 'true');
             document.body.classList.remove('search-opened');
+            document.documentElement.classList.remove('no-scroll');
         };
 
         searchOpeners.forEach(btn => {
@@ -146,6 +168,12 @@
                 closeSearch();
             });
         }
+
+        searchModal.addEventListener('click', function (e) {
+            if (e.target === searchModal) {
+                closeSearch();
+            }
+        });
 
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && searchModal.classList.contains('is-visible')) {
@@ -414,11 +442,13 @@
         }
     };
 
-    // 12. Sticky Mobile Dock Dismissal
+    // 12. Sticky Dock Dismissal & Footer Intersection Auto-Hide
     const initStickyAds = function () {
         const stickyAd = document.querySelector('.js-sticky-dock, .js-sticky-mobile-ad');
-        const closeBtn = document.querySelector('.js-dock-close, .js-sticky-close');
-        if (stickyAd && closeBtn) {
+        if (!stickyAd) return;
+
+        const closeBtn = stickyAd.querySelector('.js-dock-close, .js-sticky-close') || document.querySelector('.js-dock-close, .js-sticky-close');
+        if (closeBtn) {
             closeBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 stickyAd.classList.add('is-hidden');
@@ -427,6 +457,26 @@
                     stickyAd.style.display = 'none';
                 }, 400);
             });
+        }
+
+        // Auto-recede when approaching the footer so footer content is never obscured
+        const footer = document.querySelector('footer');
+        if (footer && 'IntersectionObserver' in window) {
+            const footerObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        stickyAd.classList.add('is-dock-receded');
+                        document.body.classList.add('dock-at-footer');
+                    } else {
+                        stickyAd.classList.remove('is-dock-receded');
+                        document.body.classList.remove('dock-at-footer');
+                    }
+                });
+            }, {
+                root: null,
+                threshold: 0.05
+            });
+            footerObserver.observe(footer);
         }
     };
 
