@@ -965,12 +965,25 @@ body.dark .ticker-item a:hover {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.hero-slider.is-dragging {
+    cursor: grabbing;
+}
+
+.hero-slider.is-dragging .hero-slider-track {
+    transition: none !important;
 }
 
 .hero-slider-track {
     display: flex;
     height: 100%;
-    transition: transform 0.4s ease-in-out;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
 }
 
 .hero-slide {
@@ -988,6 +1001,13 @@ body.dark .ticker-item a:hover {
     align-items: flex-end;
     background-size: cover;
     background-position: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+.hero-card a {
+    -webkit-user-drag: none;
 }
 
 .hero-overlay {
@@ -1010,6 +1030,11 @@ body.dark .ticker-item a:hover {
     font-weight: 700;
     line-height: 1.3;
     margin: 10px 0;
+    /* Clamp to 3 lines so very long headlines never overflow the image */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .hero-content h2 a:hover, .hero-content h3 a:hover {
@@ -2706,6 +2731,20 @@ body.dark .tab-nav-header {
         grid-template-columns: 1fr;
     }
 
+    .hero-slider-wrap,
+    .hero-card {
+        min-height: 360px;
+    }
+
+    .hero-content {
+        padding: 22px;
+    }
+
+    .hero-content h2, .hero-content h3 {
+        font-size: 1.4rem;
+        -webkit-line-clamp: 3;
+    }
+
     .footer-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -2921,6 +2960,31 @@ body.dark .tab-nav-header {
 }
 
 @media (max-width: 768px) {
+    .hero-slider-wrap,
+    .hero-card {
+        min-height: 300px;
+    }
+
+    .hero-content {
+        padding: 16px;
+    }
+
+    .hero-content h2, .hero-content h3 {
+        font-size: 1.1rem;
+        -webkit-line-clamp: 3;
+        margin: 6px 0;
+    }
+
+    .hero-slider-nav {
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .slider-btn {
+        width: 30px;
+        height: 30px;
+    }
+
     /* Compact WhatsApp button on mobile/tablets to guarantee space for search and theme toggle */
     .btn-bell span {
         display: none;

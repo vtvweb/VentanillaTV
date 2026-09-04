@@ -238,7 +238,7 @@
         });
     };
 
-    // 7. Responsive Carousels & Sliders (Hero & Editor's Choice)
+    // 7. Responsive Carousels & Sliders (Hero & Editor's Choice with Touch/Mouse Flick Support)
     const initSliders = function () {
         const sliders = document.querySelectorAll('.js-slider');
         sliders.forEach(slider => {
@@ -253,10 +253,8 @@
             let slideWidth = slides[0].offsetWidth;
             const isSingle = slider.dataset.perView === '1';
 
-            const updateSlider = function () {
-                slideWidth = slides[0].offsetWidth;
-                const gap = parseInt(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap || '0', 10) || 0;
-                track.style.transform = `translateX(-${currentIndex * (slideWidth + gap)}px)`;
+            const getGap = function () {
+                return parseInt(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap || '0', 10) || 0;
             };
 
             const maxIndex = function () {
@@ -264,42 +262,255 @@
                 return Math.max(0, slides.length - visibleCount);
             };
 
+            const updateSlider = function (withTransition = true) {
+                slideWidth = slides[0].offsetWidth;
+                const gap = getGap();
+                if (withTransition) {
+                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                } else {
+                    track.style.transition = 'none';
+                }
+                track.style.transform = `translateX(-${currentIndex * (slideWidth + gap)}px)`;
+            };
+
+            const goToNext = function () {
+                if (currentIndex < maxIndex()) {
+                    currentIndex++;
+                } else {
+                    currentIndex = 0;
+                }
+                updateSlider();
+            };
+
+            const goToPrev = function () {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                } else {
+                    currentIndex = maxIndex();
+                }
+                updateSlider();
+            };
+
             if (nextBtn) {
                 nextBtn.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (currentIndex < maxIndex()) {
-                        currentIndex++;
-                    } else {
-                        currentIndex = 0;
-                    }
-                    updateSlider();
+                    goToNext();
+                    resetAutoplayTimer();
                 });
             }
 
             if (prevBtn) {
                 prevBtn.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (currentIndex > 0) {
-                        currentIndex--;
-                    } else {
-                        currentIndex = maxIndex();
-                    }
-                    updateSlider();
+                    goToPrev();
+                    resetAutoplayTimer();
                 });
             }
 
-            if (slider.dataset.autoplay === 'true') {
-                setInterval(() => {
-                    if (currentIndex < maxIndex()) {
-                        currentIndex++;
-                    } else {
-                        currentIndex = 0;
+            // Keyboard navigation (ArrowLeft / ArrowRight)
+            slider.setAttribute('tabindex', '0');
+            slider.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    goToNext();
+                    resetAutoplayTimer();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    goToPrev();
+                    resetAutoplayTimer();
+                }
+            });
+
+            // Autoplay with pause on hover/focus and timer reset
+            let autoplayInterval = null;
+            let isPaused = false;
+
+            const startAutoplay = function () {
+                if (slider.dataset.autoplay !== 'true') return;
+                stopAutoplay();
+                autoplayInterval = setInterval(() => {
+                    if (!isPaused) {
+                        goToNext();
                     }
-                    updateSlider();
-                }, 5000);
+                }, 8000);
+            };
+
+            const stopAutoplay = function () {
+                if (autoplayInterval) {
+                    clearInterval(autoplayInterval);
+                    autoplayInterval = null;
+                }
+            };
+
+            const resetAutoplayTimer = function () {
+                stopAutoplay();
+                startAutoplay();
+            };
+
+            if (slider.dataset.autoplay === 'true') {
+                startAutoplay();
+
+                slider.addEventListener('mouseenter', () => { isPaused = true; });
+                slider.addEventListener('mouseleave', () => { isPaused = false; });
+                slider.addEventListener('focusin',    () => { isPaused = true; });
+                slider.addEventListener('focusout',   () => { isPaused = false; });
             }
 
-            window.addEventListener('resize', updateSlider, { passive: true });
+            // Only enable flick/drag gesture if more than one slide exists
+            if (slides.length > 1) {
+                let startX = 0;
+                let startY = 0;
+                let currentX = 0;
+                let currentY = 0;
+                let isPointerDown = false;
+                let isDragging = false;
+                let suppressClick = false;
+                let startTime = 0;
+                let lastX = 0;
+                let lastTime = 0;
+                let velocityX = 0;
+
+                const onPointerDown = function (e) {
+                    if (e.pointerType === 'mouse' && e.button !== 0) return;
+                    if (e.target.closest('.slider-btn')) return;
+
+                    isPointerDown = true;
+                    isDragging = false;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    currentX = e.clientX;
+                    currentY = e.clientY;
+                    lastX = e.clientX;
+                    startTime = Date.now();
+                    lastTime = startTime;
+                    velocityX = 0;
+                    isPaused = true;
+                };
+
+                const onPointerMove = function (e) {
+                    if (!isPointerDown) return;
+
+                    currentX = e.clientX;
+                    currentY = e.clientY;
+                    const deltaX = currentX - startX;
+                    const deltaY = currentY - startY;
+
+                    const now = Date.now();
+                    const dt = now - lastTime;
+                    if (dt > 10) {
+                        velocityX = (currentX - lastX) / dt;
+                        lastX = currentX;
+                        lastTime = now;
+                    }
+
+                    if (!isDragging) {
+                        // Check if vertical scrolling intent is stronger than horizontal flick
+                        if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
+                            isPointerDown = false;
+                            isPaused = false;
+                            return;
+                        }
+                        if (Math.abs(deltaX) > 8) {
+                            isDragging = true;
+                            suppressClick = true;
+                            slider.classList.add('is-dragging');
+                            try {
+                                slider.setPointerCapture(e.pointerId);
+                            } catch (err) {}
+                        }
+                    }
+
+                    if (isDragging) {
+                        if (e.cancelable) e.preventDefault();
+                        slideWidth = slides[0].offsetWidth;
+                        const gap = getGap();
+                        const baseOffset = -currentIndex * (slideWidth + gap);
+
+                        // Elastic resistance when dragging beyond edge slides
+                        let effectiveDeltaX = deltaX;
+                        if ((currentIndex === 0 && deltaX > 0) || (currentIndex === maxIndex() && deltaX < 0)) {
+                            effectiveDeltaX = deltaX * 0.35;
+                        }
+
+                        track.style.transition = 'none';
+                        track.style.transform = `translateX(${baseOffset + effectiveDeltaX}px)`;
+                    }
+                };
+
+                const onPointerUp = function (e) {
+                    if (!isPointerDown && !isDragging) return;
+                    isPointerDown = false;
+
+                    if (isDragging) {
+                        slider.classList.remove('is-dragging');
+                        try {
+                            slider.releasePointerCapture(e.pointerId);
+                        } catch (err) {}
+
+                        const deltaX = currentX - startX;
+                        const duration = Date.now() - startTime;
+                        slideWidth = slides[0].offsetWidth;
+
+                        // Flick condition: either quick velocity (>0.3 px/ms) or distance > 15% of width
+                        const isFlick = (Math.abs(velocityX) > 0.28 && duration < 400) || Math.abs(deltaX) > (slideWidth * 0.15);
+
+                        if (isFlick) {
+                            if (deltaX < 0 || velocityX < -0.28) {
+                                goToNext();
+                            } else {
+                                goToPrev();
+                            }
+                        } else {
+                            updateSlider(true);
+                        }
+
+                        resetAutoplayTimer();
+
+                        // Briefly keep suppressClick active to ignore the subsequent click event on links
+                        setTimeout(() => {
+                            suppressClick = false;
+                            isDragging = false;
+                        }, 80);
+                    } else {
+                        isDragging = false;
+                        suppressClick = false;
+                    }
+
+                    isPaused = false;
+                };
+
+                const onPointerCancel = function () {
+                    if (isPointerDown || isDragging) {
+                        isPointerDown = false;
+                        isDragging = false;
+                        slider.classList.remove('is-dragging');
+                        updateSlider(true);
+                        setTimeout(() => { suppressClick = false; }, 80);
+                        isPaused = false;
+                    }
+                };
+
+                // Suppress click on card links if the user was flicking/dragging
+                slider.addEventListener('click', function (e) {
+                    if (suppressClick) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }, true);
+
+                // Prevent native image/link dragghost
+                slider.addEventListener('dragstart', function (e) {
+                    e.preventDefault();
+                });
+
+                // Attach pointer listeners for mobile touch & desktop mouse flick
+                slider.addEventListener('pointerdown', onPointerDown, { passive: true });
+                slider.addEventListener('pointermove', onPointerMove);
+                slider.addEventListener('pointerup', onPointerUp);
+                slider.addEventListener('pointercancel', onPointerCancel);
+            }
+
+            window.addEventListener('resize', () => updateSlider(false), { passive: true });
         });
     };
 
