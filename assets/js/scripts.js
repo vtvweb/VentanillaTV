@@ -705,6 +705,38 @@
         }
     };
 
+    // 13. Search Page Input Query Pre-population & Synchronization
+    const initSearchPageQuery = function () {
+        const searchInput = document.querySelector('.search-page-input');
+        if (!searchInput) return;
+
+        const getQueryFromUrl = function () {
+            // 1. Standard ?q= query parameter
+            const params = new URLSearchParams(window.location.search);
+            let q = params.get('q');
+            if (q) return q;
+
+            // 2. Google CSE hash format #gsc.q= or #q=
+            if (window.location.hash) {
+                const hash = window.location.hash.replace(/^#/, '');
+                const hashParams = new URLSearchParams(hash);
+                q = hashParams.get('gsc.q') || hashParams.get('q');
+                if (q) return q;
+            }
+            return '';
+        };
+
+        const populateQuery = function () {
+            const currentQuery = getQueryFromUrl();
+            if (currentQuery) {
+                searchInput.value = decodeURIComponent(currentQuery);
+            }
+        };
+
+        populateQuery();
+        window.addEventListener('hashchange', populateQuery);
+    };
+
     // Run on DOM ready
     document.addEventListener('DOMContentLoaded', function () {
         initThemeToggle();
@@ -719,5 +751,6 @@
         initPageTransitions();
         initTickerSync();
         initStickyAds();
+        initSearchPageQuery();
     });
 })();

@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Blue Bird Favicon">
   <style>
     :root {
-      fill: #2196f3;
+      fill: #00a8eb;
     }
     path {
       fill: inherit;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        fill: #42a5f5;
+        fill: #00a8eb;
       }
     }
   </style>
