@@ -27,15 +27,7 @@
                 if (document.body) document.body.classList.remove('dark');
                 toggleButtons.forEach(btn => btn.classList.remove('is-dark'));
             }
-            document.querySelectorAll('.site-logo img').forEach(img => {
-                const isFooter = img.closest('.mg-footer-widget-area');
-                const base = img.src.split('#')[0];
-                if (theme === 'dark' || isFooter) {
-                    if (!img.src.includes('#dark')) img.src = base + '#dark';
-                } else {
-                    if (img.src.includes('#dark')) img.src = base;
-                }
-            });
+
             localStorage.setItem('newsup_theme', theme);
         };
 

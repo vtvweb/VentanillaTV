@@ -1,39 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   viewBox="42 80 442 345"
+   width="500"
+   height="500"
+   viewBox="0 0 500 500"
    version="1.1"
    id="svg10"
    xmlns="http://www.w3.org/2000/svg">
-  <defs id="defs10">
-    <style>
-      #path3 { fill: #00a8eb; }
-      #path6 { fill: #00a8eb; }
-      #path1 { fill: #898989; }
-      #path1-0 { fill: #ffffff; }
-
-      #dark:target ~ #path3,
-      [data-theme="dark"] #path3 {
-        fill: #00a8eb !important;
-      }
-      #dark:target ~ #path6,
-      [data-theme="dark"] #path6 {
-        fill: #00a8eb !important;
-      }
-      #dark:target ~ #path1,
-      [data-theme="dark"] #path1 {
-        fill: #ffffff !important;
-      }
-      #dark:target ~ #path1-0,
-      [data-theme="dark"] #path1-0 {
-        fill: #ffffff !important;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #path1 { fill: #ffffff !important; }
-      }
-    </style>
-  </defs>
-  <g id="dark" />
   <path
      d="m 387,417 h 91 v -66 h -91 z"
      id="path6"

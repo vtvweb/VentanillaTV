@@ -395,6 +395,11 @@ body.dark .site-logo img,
     transition: all 0.3s ease;
 }
 
+.mg-menu-full .container-fluid {
+    max-width: 1500px;
+    padding: 0 20px;
+}
+
 .mg-menu-full.is-sticky {
     position: fixed;
     top: 0;
@@ -467,15 +472,7 @@ body.dark .site-logo img,
 
 @media (min-width: 1025px) {
     .navbar__drawer {
-        overflow-x: auto;
-        overflow-y: visible;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .navbar__drawer::-webkit-scrollbar {
-        display: none;
+        overflow: visible;
     }
 
     .navbar__menu {
@@ -1121,6 +1118,11 @@ body.dark .ticker-item a:hover {
     border-bottom: 2px solid var(--border-color, #e2e8f0);
 }
 
+.tab-nav-header.is-single {
+    background-color: transparent;
+    border-bottom: 2px solid var(--pri-color, #00a8eb);
+}
+
 .tab-btn {
     flex: 1;
     text-align: center;
@@ -1133,8 +1135,20 @@ body.dark .ticker-item a:hover {
     transition: all 0.2s ease;
 }
 
+.tab-nav-header.is-single .tab-btn {
+    flex: initial;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    background-color: var(--pri-color, #00a8eb);
+    border-radius: 4px 4px 0 0;
+    cursor: default;
+}
+
 .tab-btn.is-active {
-    color: var(--pri-color, #D73A42);
+    color: var(--pri-color, #00a8eb);
     background-color: var(--card-bg, #ffffff);
 }
 
@@ -1145,7 +1159,11 @@ body.dark .ticker-item a:hover {
     left: 0;
     right: 0;
     height: 2px;
-    background-color: var(--pri-color, #D73A42);
+    background-color: var(--pri-color, #00a8eb);
+}
+
+.tab-nav-header.is-single .tab-btn::after {
+    display: none;
 }
 
 .tab-content {
@@ -3023,26 +3041,11 @@ body.dark .tab-nav-header {
    ========================================================================== */
 
 /* Responsive adjustments for Desktop and Laptop screen resizing */
-@media (max-width: 1520px) {
+@media (max-width: 1550px) {
     .navbar__menu > li > a {
-        padding: 16px 10px;
+        padding: 16px 9px;
         font-size: 13px;
-        letter-spacing: 0.15px;
-    }
-    .navbar__actions {
-        gap: 10px;
-    }
-    .btn-bell {
-        padding: 8px 12px;
-        font-size: 11.5px;
-    }
-}
-
-@media (max-width: 1420px) {
-    .navbar__menu > li > a {
-        padding: 16px 8px;
-        font-size: 12.5px;
-        letter-spacing: 0px;
+        letter-spacing: 0.1px;
     }
     .navbar__actions {
         gap: 8px;
@@ -3067,10 +3070,11 @@ body.dark .tab-nav-header {
     }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1240px) {
     .navbar__menu > li > a {
-        padding: 16px 6px;
+        padding: 16px 7px;
         font-size: 12px;
+        letter-spacing: 0px;
     }
     .navbar__actions {
         gap: 6px;
@@ -3145,47 +3149,72 @@ body.dark .tab-nav-header {
     }
 
     .navbar__drawer-header {
+        position: relative;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 16px 20px;
-        background-color: var(--navbar-bg, #202f5b);
-        color: #ffffff;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        justify-content: center;
+        padding: 14px 20px;
+        min-height: 52px;
+        background-color: var(--card-bg, #ffffff);
+        border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
         flex-shrink: 0;
     }
 
     .navbar__drawer-title {
-        font-size: 14px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 1px;
         text-transform: uppercase;
-        color: #ffffff;
+        color: var(--sec-color, #161e38);
+        text-align: center;
+        margin: 0 auto;
     }
 
     .navbar__drawer-close {
-        background: rgba(255, 255, 255, 0.12);
-        border: none;
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 26px;
+        height: 26px;
+        background: #1e293b;
         color: #ffffff;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 50%;
         cursor: pointer;
-        padding: 4px;
-        width: 30px;
-        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 4px;
-        transition: background-color 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
+        padding: 0;
+        z-index: 2;
     }
 
     .navbar__drawer-close:hover {
-        background-color: rgba(255, 255, 255, 0.25);
+        background-color: rgba(239, 68, 68, 0.95);
+        border-color: #ef4444;
+        color: #ffffff;
+        transform: translateY(-50%) scale(1.1);
     }
 
     .navbar__drawer-close svg {
-        width: 18px;
-        height: 18px;
+        width: 12px;
+        height: 12px;
         stroke: currentColor;
+    }
+
+    [data-theme="dark"] .navbar__drawer-header,
+    html.dark .navbar__drawer-header,
+    body.dark .navbar__drawer-header {
+        background-color: var(--card-bg, #1a2236);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="dark"] .navbar__drawer-title,
+    html.dark .navbar__drawer-title,
+    body.dark .navbar__drawer-title {
+        color: #ffffff;
     }
 
     .navbar__drawer .navbar__menu {
@@ -3193,7 +3222,7 @@ body.dark .tab-nav-header {
         flex-direction: column;
         align-items: flex-start;
         width: 100%;
-        padding: 8px 0;
+        padding: 8px 0 90px;
         margin: 0;
         list-style: none;
         position: static;
@@ -3675,12 +3704,14 @@ body.is-page-exiting .search-page-content {
     will-change: transform, opacity;
 }
 
+body.menu-opened .vtv-sticky-dock,
+body.menu-opened .publii-sticky-mobile-ad,
 .vtv-sticky-dock.is-hidden,
 .publii-sticky-mobile-ad.is-hidden {
-    transform: translateY(110%);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    transform: translateY(120%) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 /* Sticky Dock Ad Wrapper: anchors close button directly to ad bounds */
