@@ -620,13 +620,12 @@ body.dark .site-logo img,
     flex-shrink: 0;
     box-sizing: border-box;
     aspect-ratio: 1 / 1;
-    transition: background-color 0.2s ease, transform 0.15s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .navbar-icon-btn:hover {
     background-color: var(--pri-color, #2196f3);
     color: #ffffff;
-    transform: scale(1.05);
 }
 
 .navbar-icon-btn svg {
@@ -968,11 +967,21 @@ body.dark .ticker-item a:hover {
     user-select: none;
     -webkit-user-select: none;
     touch-action: pan-y;
-    cursor: grab;
 }
 
 .hero-slider.is-dragging {
     cursor: grabbing;
+}
+
+.hero-slider.is-dragging * {
+    cursor: grabbing !important;
+}
+
+.hero-card a,
+.hero-content a,
+.badge-cat,
+.slider-btn {
+    cursor: pointer;
 }
 
 .hero-slider.is-dragging .hero-slider-track {
@@ -1999,6 +2008,26 @@ footer {
     font-size: 14px;
     line-height: 1.7;
     margin-top: 12px;
+}
+
+.footer-about-link {
+    margin-top: 10px;
+}
+
+.footer-history-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pri-color, #2196f3);
+    text-decoration: none;
+    transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.footer-history-link:hover {
+    color: var(--pri-color-dark, #42a5f5);
+    gap: 9px;
 }
 
 .footer-links-list li {

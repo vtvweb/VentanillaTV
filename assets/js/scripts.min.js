@@ -369,13 +369,16 @@
                 let lastX = 0;
                 let lastTime = 0;
                 let velocityX = 0;
+                let pointerType = 'mouse';
 
                 const onPointerDown = function (e) {
                     if (e.pointerType === 'mouse' && e.button !== 0) return;
                     if (e.target.closest('.slider-btn')) return;
 
+                    pointerType = e.pointerType || 'mouse';
                     isPointerDown = true;
                     isDragging = false;
+                    suppressClick = false;
                     startX = e.clientX;
                     startY = e.clientY;
                     currentX = e.clientX;
@@ -404,13 +407,16 @@
                     }
 
                     if (!isDragging) {
-                        // Check if vertical scrolling intent is stronger than horizontal flick
+                        // Allow vertical page scrolling on touch devices if movement is vertical
                         if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
                             isPointerDown = false;
                             isPaused = false;
                             return;
                         }
-                        if (Math.abs(deltaX) > 8) {
+
+                        // Robust threshold: 22px for mouse, 16px for touch so clicks never get accidentally blocked
+                        const threshold = (pointerType === 'mouse') ? 22 : 16;
+                        if (Math.abs(deltaX) > threshold) {
                             isDragging = true;
                             suppressClick = true;
                             slider.classList.add('is-dragging');
@@ -438,7 +444,7 @@
                 };
 
                 const onPointerUp = function (e) {
-                    if (!isPointerDown && !isDragging) return;
+                    if (!isPointerDown) return;
                     isPointerDown = false;
 
                     if (isDragging) {
@@ -451,8 +457,8 @@
                         const duration = Date.now() - startTime;
                         slideWidth = slides[0].offsetWidth;
 
-                        // Flick condition: either quick velocity (>0.3 px/ms) or distance > 15% of width
-                        const isFlick = (Math.abs(velocityX) > 0.28 && duration < 400) || Math.abs(deltaX) > (slideWidth * 0.15);
+                        // Flick condition: either quick velocity (>0.28 px/ms) or distance > 15% of width
+                        const isFlick = (Math.abs(velocityX) > 0.28 && duration < 450) || Math.abs(deltaX) > (slideWidth * 0.15);
 
                         if (isFlick) {
                             if (deltaX < 0 || velocityX < -0.28) {
@@ -466,31 +472,39 @@
 
                         resetAutoplayTimer();
 
-                        // Briefly keep suppressClick active to ignore the subsequent click event on links
+                        // Suppress click immediately following drag
                         setTimeout(() => {
                             suppressClick = false;
                             isDragging = false;
-                        }, 80);
+                        }, 120);
                     } else {
-                        isDragging = false;
+                        // Regular tap / click without drag: allow immediate link navigation
                         suppressClick = false;
+                        isDragging = false;
+
+                        // If user clicked background of hero card (not an <a> tag directly), navigate to article
+                        if (!e.target.closest('a') && !e.target.closest('button')) {
+                            const activeSlide = slides[currentIndex];
+                            const link = activeSlide ? activeSlide.querySelector('.hero-content h2 a, .hero-content h3 a') : null;
+                            if (link && link.href) {
+                                link.click();
+                            }
+                        }
                     }
 
                     isPaused = false;
                 };
 
                 const onPointerCancel = function () {
-                    if (isPointerDown || isDragging) {
-                        isPointerDown = false;
-                        isDragging = false;
-                        slider.classList.remove('is-dragging');
-                        updateSlider(true);
-                        setTimeout(() => { suppressClick = false; }, 80);
-                        isPaused = false;
-                    }
+                    isPointerDown = false;
+                    isDragging = false;
+                    suppressClick = false;
+                    slider.classList.remove('is-dragging');
+                    updateSlider(true);
+                    isPaused = false;
                 };
 
-                // Suppress click on card links if the user was flicking/dragging
+                // Suppress click on card links only if user was genuinely dragging/swiping
                 slider.addEventListener('click', function (e) {
                     if (suppressClick) {
                         e.preventDefault();
