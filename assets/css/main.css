@@ -482,6 +482,8 @@ body.dark .site-logo img,
 
 .navbar__drawer-header {
     display: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .navbar__menu {
@@ -3136,6 +3138,7 @@ body.dark .tab-nav-header {
         color: var(--text-main, #212529);
         display: flex;
         flex-direction: column;
+        align-items: stretch;
         padding: 0;
         box-shadow: 0 0 35px rgba(0, 0, 0, 0.35);
         transform: translateX(-100%);
@@ -3153,7 +3156,9 @@ body.dark .tab-nav-header {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 14px 20px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px 44px;
         min-height: 52px;
         background-color: var(--card-bg, #ffffff);
         border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
