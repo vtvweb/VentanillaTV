@@ -3,36 +3,115 @@
    2016-Era Browser Compatibility Layer (Firefox 44-50, Chrome 48-54, Android 5/6)
    ========================================================================== */
 
-/* --- 1. Flexbox & Alignment Enhancements --- */
+/* --- 1. Flexbox Layout & Firefox 44-50 Multi-line Wrap Fix --- */
 .main-layout-row {
-  display: -webkit-box;
+  display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-flex-wrap: wrap;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
 }
 .content-area.with-sidebar {
+  -webkit-flex: 1 1 calc(100% - 350px);
+  -ms-flex: 1 1 calc(100% - 350px);
+  flex: 1 1 calc(100% - 350px);
   width: calc(100% - 350px);
   max-width: calc(100% - 350px);
+  min-width: 0;
   box-sizing: border-box;
 }
 .sidebar-area {
+  -webkit-flex: 0 0 320px;
+  -ms-flex: 0 0 320px;
+  flex: 0 0 320px;
   width: 320px;
-  max-width: 100%;
-  flex-shrink: 0;
+  max-width: 320px;
   box-sizing: border-box;
 }
 @media (max-width: 1024px) {
+  .content-area,
   .content-area.with-sidebar {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 30px;
+    -webkit-flex: 0 0 100% !important;
+    -ms-flex: 0 0 100% !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 30px !important;
   }
   .sidebar-area {
-    width: 100%;
-    max-width: 100%;
+    -webkit-flex: 0 0 100% !important;
+    -ms-flex: 0 0 100% !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
   }
+}
+
+/* --- Spotlight Video & Ad Slot Containment --- */
+.sidebar-spotlight-box .vtv-spotlight-frame,
+.vtv-slot-sidebar {
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.sidebar-spotlight-box .vtv-spotlight-media,
+.vtv-slot-sidebar .vtv-spotlight-media {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 1024px) {
+  .sidebar-spotlight-box .vtv-spotlight-frame,
+  .vtv-slot-sidebar {
+    max-width: 300px !important;
+    width: 100% !important;
+    margin: 0 auto 20px auto !important;
+  }
+  .sidebar-spotlight-box .vtv-spotlight-media,
+  .vtv-slot-sidebar .vtv-spotlight-media {
+    max-height: 250px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+  }
+}
+
+.article-spotlight-box {
+  margin: 25px auto;
+  padding: 10px 0;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+}
+.article-spotlight-box .vtv-spotlight-frame,
+.vtv-slot-inArticle {
+  max-width: 336px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box;
+}
+.article-spotlight-box .vtv-spotlight-media,
+.vtv-slot-inArticle .vtv-spotlight-media {
+  max-width: 336px !important;
+  max-height: 250px !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: cover !important;
+  display: block !important;
 }
 
 /* --- 2. Flexbox Gap Fallbacks (using adjacent sibling margins) --- */
