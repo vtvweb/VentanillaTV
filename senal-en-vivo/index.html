@@ -72,40 +72,22 @@
     }
     #vtv-player-box:not(.is-vertical) {
       aspect-ratio: 16 / 9;
+      width: 100%;
     }
-    #vtv-player-box iframe {
+    #vtv-player-box:not(.is-vertical) iframe {
       width: 100% !important;
       height: 100% !important;
       border: none !important;
       display: block !important;
     }
-    /* Desktop Vertical Live Stream */
-    @media (min-width: 769px) {
-      #vtv-player-box.is-vertical {
-        height: 520px;
-        max-width: 100%;
-      }
-      #vtv-player-box.is-vertical iframe {
-        width: 292px !important;
-        height: 100% !important;
-        aspect-ratio: 9 / 16;
-        margin: 0 auto !important;
-      }
+    #vtv-player-box.is-vertical {
+      width: 100%;
     }
-    /* Mobile Vertical Live Stream (Story / Reel mode) */
-    @media (max-width: 768px) {
-      #vtv-player-box.is-vertical {
-        height: 72vh;
-        max-height: 620px;
-        min-height: 440px;
-        width: 100%;
-      }
-      #vtv-player-box.is-vertical iframe {
-        width: 100% !important;
-        max-width: calc(72vh * 9 / 16) !important;
-        height: 100% !important;
-        margin: 0 auto !important;
-      }
+    #vtv-player-box.is-vertical iframe {
+      border: none !important;
+      display: block !important;
+      margin: 0 auto !important;
+      max-width: 100% !important;
     }
   </style>
 
@@ -124,30 +106,53 @@
         var box = document.getElementById("vtv-player-box");
         if (!box) return;
 
-        var supportsAspectRatio = ('aspectRatio' in document.documentElement.style);
-        if (!supportsAspectRatio) {
-          if (box.className.indexOf("is-vertical") !== -1) {
-            if (window.innerWidth <= 768) {
-              var h = Math.min(620, Math.max(440, Math.round(window.innerHeight * 0.72)));
-              box.style.height = h + "px";
-              var iframe = box.querySelector("iframe");
-              if (iframe) {
-                var w = Math.round(h * 9 / 16);
-                iframe.style.width = Math.min(box.clientWidth, w) + "px";
-              }
-            } else {
-              box.style.height = "520px";
-              var iframeDesk = box.querySelector("iframe");
-              if (iframeDesk) {
-                iframeDesk.style.width = "292px";
-              }
-            }
+        var iframe = box.querySelector("iframe");
+        var isVertical = (box.className.indexOf("is-vertical") !== -1);
+
+        if (isVertical) {
+          var containerWidth = box.clientWidth || (box.parentElement ? box.parentElement.clientWidth : 0) || window.innerWidth;
+          var winWidth = window.innerWidth || (document.documentElement ? document.documentElement.clientWidth : 800) || 800;
+          var winHeight = window.innerHeight || (document.documentElement ? document.documentElement.clientHeight : 600) || 600;
+          var targetHeight;
+
+          if (winWidth <= 768) {
+            var desiredH = Math.round(winHeight * 0.72);
+            var maxHFromWidth = Math.round((containerWidth - 10) * (16 / 9));
+            targetHeight = Math.min(desiredH, 620, maxHFromWidth);
+            targetHeight = Math.max(targetHeight, 320);
           } else {
-            box.style.height = Math.round(box.clientWidth * 9 / 16) + "px";
-            var iframeWide = box.querySelector("iframe");
-            if (iframeWide) {
-              iframeWide.style.width = "100%";
+            var maxDeskH = Math.max(420, Math.min(560, Math.round(winHeight * 0.72)));
+            targetHeight = Math.min(520, maxDeskH);
+          }
+
+          var exactWidth = Math.round(targetHeight * (9 / 16));
+          if (containerWidth > 0 && exactWidth > containerWidth) {
+            exactWidth = containerWidth;
+            targetHeight = Math.round(exactWidth * (16 / 9));
+          }
+
+          box.style.height = targetHeight + "px";
+
+          if (iframe) {
+            iframe.style.setProperty("width", exactWidth + "px", "important");
+            iframe.style.setProperty("height", targetHeight + "px", "important");
+            iframe.style.setProperty("margin", "0 auto", "important");
+          }
+        } else {
+          var supportsAspectRatio = ('aspectRatio' in (document.documentElement ? document.documentElement.style : {}));
+          if (supportsAspectRatio) {
+            box.style.height = "";
+          } else {
+            var w = box.clientWidth || (box.parentElement ? box.parentElement.clientWidth : 0);
+            if (w > 0) {
+              box.style.height = Math.round(w * (9 / 16)) + "px";
             }
+          }
+
+          if (iframe) {
+            iframe.style.setProperty("width", "100%", "important");
+            iframe.style.setProperty("height", "100%", "important");
+            iframe.style.setProperty("margin", "0", "important");
           }
         }
       }
@@ -292,6 +297,7 @@
       }
 
       window.addEventListener("resize", adjustPlayerDimensions);
+      window.addEventListener("orientationchange", adjustPlayerDimensions);
       adjustPlayerDimensions();
       checkFacebookLive();
       setInterval(checkFacebookLive, CHECK_INTERVAL_MS);
