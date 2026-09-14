@@ -736,6 +736,64 @@
         }
     };
 
+    // 9b. Dynamic Live Badge Widget (Cloudflare Worker polling)
+    var initLiveBadgeWidget = function () {
+        var badgeEl = document.querySelector('.js-live-badge');
+        if (!badgeEl || !badgeEl.classList.contains('is-dynamic')) return;
+
+        var workerUrl = badgeEl.getAttribute('data-worker-url');
+        if (!workerUrl) return;
+
+        var intervalSec = parseInt(badgeEl.getAttribute('data-interval'), 10) || 30;
+        var intervalMs = Math.max(10, intervalSec) * 1000;
+        var offlineBehavior = badgeEl.getAttribute('data-offline-behavior') || 'hide';
+        var activeText = badgeEl.getAttribute('data-active-text') || 'En vivo';
+        var offlineText = badgeEl.getAttribute('data-offline-text') || 'Señal Digital';
+        var textEl = badgeEl.querySelector('.live-text');
+
+        var checkLive = function () {
+            try {
+                fetch(workerUrl, { cache: 'no-cache' })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('Worker response error');
+                        return res.json();
+                    })
+                    .then(function (data) {
+                        badgeEl.classList.remove('is-hidden-initial');
+
+                        if (data && data.live && data.videoId) {
+                            badgeEl.classList.add('is-live');
+                            badgeEl.classList.remove('is-offline', 'is-hidden');
+                            if (textEl) textEl.textContent = activeText;
+                        } else {
+                            badgeEl.classList.remove('is-live');
+                            if (offlineBehavior === 'hide') {
+                                badgeEl.classList.add('is-hidden');
+                            } else if (offlineBehavior === 'show_offline') {
+                                badgeEl.classList.remove('is-hidden');
+                                badgeEl.classList.add('is-offline');
+                                if (textEl) textEl.textContent = offlineText;
+                            } else {
+                                badgeEl.classList.remove('is-hidden', 'is-offline');
+                                if (textEl) textEl.textContent = activeText;
+                            }
+                        }
+                    })
+                    .catch(function () {
+                        badgeEl.classList.remove('is-hidden-initial');
+                        if (offlineBehavior === 'hide' && !badgeEl.classList.contains('is-live')) {
+                            badgeEl.classList.add('is-hidden');
+                        }
+                    });
+            } catch (err) {
+                badgeEl.classList.remove('is-hidden-initial');
+            }
+        };
+
+        checkLive();
+        setInterval(checkLive, intervalMs);
+    };
+
     // 10. Smooth Article / Content Transitions
     var initPageTransitions = function () {
         var transitionType = document.documentElement.getAttribute('data-page-transition');
@@ -1001,6 +1059,7 @@
         initSliders();
         initCopyLink();
         initLiveDate();
+        initLiveBadgeWidget();
         initPageTransitions();
         initTickerSync();
         initStickyAds();
