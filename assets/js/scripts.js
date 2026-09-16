@@ -320,8 +320,11 @@
             if (!track || !slides.length) return;
 
             var currentIndex = 0;
-            var slideWidth = slides[0].offsetWidth;
             var isSingle = slider.getAttribute('data-per-view') === '1';
+
+            var getSlideWidth = function () {
+                return (slides[0] && slides[0].offsetWidth) || slider.offsetWidth || slider.clientWidth || 0;
+            };
 
             var getGap = function () {
                 var computed = window.getComputedStyle ? window.getComputedStyle(track) : track.currentStyle;
@@ -331,22 +334,26 @@
             };
 
             var maxIndex = function () {
-                var visibleCount = isSingle ? 1 : Math.max(1, Math.floor(slider.offsetWidth / (slideWidth || 1)));
+                var sw = getSlideWidth();
+                var visibleCount = isSingle ? 1 : Math.max(1, Math.floor(slider.offsetWidth / (sw || 1)));
                 return Math.max(0, slides.length - visibleCount);
             };
 
             var updateSlider = function (withTransition) {
                 if (withTransition === undefined) withTransition = true;
-                slideWidth = slides[0].offsetWidth;
+                var sw = getSlideWidth();
                 var gap = getGap();
-                if (withTransition) {
-                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                } else {
-                    track.style.transition = 'none';
-                }
-                var offset = -(currentIndex * (slideWidth + gap));
-                track.style.transform = 'translateX(' + offset + 'px)';
-                track.style.webkitTransform = 'translateX(' + offset + 'px)';
+                var transitionVal = withTransition ? 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+                var webkitTransitionVal = withTransition ? '-webkit-transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+
+                track.style.webkitTransition = webkitTransitionVal;
+                track.style.transition = transitionVal;
+
+                var offset = -(currentIndex * (sw + gap));
+                var transformVal = 'translate3d(' + offset + 'px, 0, 0)';
+                track.style.webkitTransform = transformVal;
+                track.style.msTransform = transformVal;
+                track.style.transform = transformVal;
             };
 
             var goToNext = function () {
@@ -355,7 +362,7 @@
                 } else {
                     currentIndex = 0;
                 }
-                updateSlider();
+                updateSlider(true);
             };
 
             var goToPrev = function () {
@@ -364,7 +371,7 @@
                 } else {
                     currentIndex = maxIndex();
                 }
-                updateSlider();
+                updateSlider(true);
             };
 
             if (nextBtn) {
@@ -517,10 +524,13 @@
                             effectiveDeltaX = deltaX * 0.35;
                         }
 
+                        track.style.webkitTransition = 'none';
                         track.style.transition = 'none';
                         var newPos = baseOffset + effectiveDeltaX;
-                        track.style.transform = 'translateX(' + newPos + 'px)';
-                        track.style.webkitTransform = 'translateX(' + newPos + 'px)';
+                        var dragTransform = 'translate3d(' + newPos + 'px, 0, 0)';
+                        track.style.webkitTransform = dragTransform;
+                        track.style.msTransform = dragTransform;
+                        track.style.transform = dragTransform;
                     }
                 };
 
@@ -538,10 +548,10 @@
 
                         var deltaX = currentX - startX;
                         var duration = Date.now() - startTime;
-                        slideWidth = slides[0].offsetWidth;
+                        var sw = getSlideWidth();
 
                         // Flick condition: either quick velocity (>0.28 px/ms) or distance > 15% of width
-                        var isFlick = (Math.abs(velocityX) > 0.28 && duration < 450) || Math.abs(deltaX) > (slideWidth * 0.15);
+                        var isFlick = (Math.abs(velocityX) > 0.28 && duration < 450) || Math.abs(deltaX) > (sw * 0.15);
 
                         if (isFlick) {
                             if (deltaX < 0 || velocityX < -0.28) {
@@ -678,6 +688,14 @@
             window.addEventListener('resize', function () {
                 updateSlider(false);
             });
+            window.addEventListener('load', function () {
+                updateSlider(false);
+            });
+            if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(function () {
+                    updateSlider(false);
+                });
+            }
         });
     };
 
@@ -736,6 +754,7 @@
         }
     };
 
+
     // 9b. Dynamic Live Badge Widget (Cloudflare Worker polling)
     var initLiveBadgeWidget = function () {
         var badgeEl = document.querySelector('.js-live-badge');
@@ -751,40 +770,69 @@
         var offlineText = badgeEl.getAttribute('data-offline-text') || 'Señal Digital';
         var textEl = badgeEl.querySelector('.live-text');
 
+        var updateBadge = function (data) {
+            badgeEl.classList.remove('is-hidden-initial');
+
+            if (data && data.live && data.videoId) {
+                badgeEl.classList.add('is-live');
+                badgeEl.classList.remove('is-offline', 'is-hidden');
+                if (textEl) textEl.textContent = activeText;
+            } else {
+                badgeEl.classList.remove('is-live');
+                if (offlineBehavior === 'hide') {
+                    badgeEl.classList.add('is-hidden');
+                } else if (offlineBehavior === 'show_offline') {
+                    badgeEl.classList.remove('is-hidden');
+                    badgeEl.classList.add('is-offline');
+                    if (textEl) textEl.textContent = offlineText;
+                } else {
+                    badgeEl.classList.remove('is-hidden', 'is-offline');
+                    if (textEl) textEl.textContent = activeText;
+                }
+            }
+        };
+
+        var handleOffline = function () {
+            badgeEl.classList.remove('is-hidden-initial');
+            if (offlineBehavior === 'hide' && !badgeEl.classList.contains('is-live')) {
+                badgeEl.classList.add('is-hidden');
+            }
+        };
+
         var checkLive = function () {
             try {
-                fetch(workerUrl, { cache: 'no-cache' })
-                    .then(function (res) {
-                        if (!res.ok) throw new Error('Worker response error');
-                        return res.json();
-                    })
-                    .then(function (data) {
-                        badgeEl.classList.remove('is-hidden-initial');
-
-                        if (data && data.live && data.videoId) {
-                            badgeEl.classList.add('is-live');
-                            badgeEl.classList.remove('is-offline', 'is-hidden');
-                            if (textEl) textEl.textContent = activeText;
-                        } else {
-                            badgeEl.classList.remove('is-live');
-                            if (offlineBehavior === 'hide') {
-                                badgeEl.classList.add('is-hidden');
-                            } else if (offlineBehavior === 'show_offline') {
-                                badgeEl.classList.remove('is-hidden');
-                                badgeEl.classList.add('is-offline');
-                                if (textEl) textEl.textContent = offlineText;
+                if (typeof fetch === 'function') {
+                    fetch(workerUrl, { cache: 'no-cache' })
+                        .then(function (res) {
+                            if (!res.ok) throw new Error('Worker response error');
+                            return res.json();
+                        })
+                        .then(function (data) {
+                            updateBadge(data);
+                        })
+                        .catch(function () {
+                            handleOffline();
+                        });
+                } else if (typeof XMLHttpRequest !== 'undefined') {
+                    var xhr = new XMLHttpRequest();
+                    var urlWithTs = workerUrl + (workerUrl.indexOf('?') === -1 ? '?' : '&') + '_t=' + new Date().getTime();
+                    xhr.open('GET', urlWithTs, true);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                try {
+                                    var data = JSON.parse(xhr.responseText);
+                                    updateBadge(data);
+                                } catch (e) {
+                                    handleOffline();
+                                }
                             } else {
-                                badgeEl.classList.remove('is-hidden', 'is-offline');
-                                if (textEl) textEl.textContent = activeText;
+                                handleOffline();
                             }
                         }
-                    })
-                    .catch(function () {
-                        badgeEl.classList.remove('is-hidden-initial');
-                        if (offlineBehavior === 'hide' && !badgeEl.classList.contains('is-live')) {
-                            badgeEl.classList.add('is-hidden');
-                        }
-                    });
+                    };
+                    xhr.send();
+                }
             } catch (err) {
                 badgeEl.classList.remove('is-hidden-initial');
             }
