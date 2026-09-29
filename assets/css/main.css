@@ -4759,3 +4759,47 @@ body.dock-dismissed footer {
   width: 20px;
   height: 20px;
 }
+
+/* --- 6. Dark Mode: Override inline styles in post content --- */
+/* Blockquotes and other elements with hardcoded light background-color
+   become unreadable in dark mode (light text on light bg). Force dark
+   backgrounds and ensure text color adapts. */
+
+[data-theme="dark"] .post-content blockquote,
+html.dark .post-content blockquote,
+body.dark .post-content blockquote {
+    background-color: var(--card-bg, #181d27) !important;
+    color: var(--text-main, #e2e8f0) !important;
+    border-left-color: var(--pri-color-dark, #00a8eb) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .post-content blockquote {
+        background-color: var(--card-bg, #181d27) !important;
+        color: var(--text-main, #e2e8f0) !important;
+        border-left-color: var(--pri-color-dark, #00a8eb) !important;
+    }
+}
+
+/* Also override inline color on any spans/paragraphs inside post-content
+   that editors may have styled with a hardcoded text color */
+[data-theme="dark"] .post-content [style*="color"],
+html.dark .post-content [style*="color"],
+body.dark .post-content [style*="color"] {
+    color: var(--text-main, #e2e8f0) !important;
+}
+
+[data-theme="dark"] .post-content [style*="background-color"],
+html.dark .post-content [style*="background-color"],
+body.dark .post-content [style*="background-color"] {
+    background-color: var(--card-bg, #181d27) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .post-content [style*="color"] {
+        color: var(--text-main, #e2e8f0) !important;
+    }
+    :root:not([data-theme="light"]) .post-content [style*="background-color"] {
+        background-color: var(--card-bg, #181d27) !important;
+    }
+}
