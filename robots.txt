@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://ventanillatv.pe/sitemap.xml

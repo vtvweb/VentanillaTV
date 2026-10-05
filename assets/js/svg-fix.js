@@ -1,0 +1,1 @@
+!function(){for(var e=document.querySelectorAll("use"),i=0;i<e.length;i++){var t=e[i],r=t.getAttribute("xlink:href")||t.getAttribute("href");if(r&&-1!==r.indexOf("#")){var n="#"+r.split("#")[1],o=window.publiiSvgFix&&window.publiiSvgFix[n];if(o){var u=t.parentNode;u.innerHTML=o.content,u.setAttribute("viewBox",o.viewbox)}}}}();
