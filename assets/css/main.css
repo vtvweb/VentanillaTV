@@ -463,6 +463,102 @@ body.dark .site-logo img,
 }
 
 /* ==========================================================================
+   5.1 Top Hero Video Showcase (Above Logo / Nav)
+   ========================================================================== */
+.vtv-top-hero-area {
+    width: 100%;
+    background-color: var(--header-bg, #ffffff);
+    padding: 10px 0;
+    position: relative;
+    border-bottom: 1px solid var(--border-light, #edf2f7);
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .vtv-top-hero-area,
+body.dark .vtv-top-hero-area {
+    background-color: var(--dark-bg-card, #1e2433);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.vtv-top-hero-area.is-fullwidth {
+    padding: 0;
+    border-bottom: none;
+    background-color: #000;
+}
+
+.vtv-top-hero-area.is-fullwidth .vtv-top-hero-fluid {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.vtv-top-hero-area .vtv-slot-topHero {
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.vtv-top-hero-area.is-fullwidth .vtv-slot-topHero {
+    max-width: 100% !important;
+}
+
+.vtv-top-hero-area .vtv-slot-topHero .vtv-spotlight-media,
+.vtv-top-hero-area .vtv-slot-topHero .vtv-spotlight-img {
+    width: 100%;
+    height: auto;
+    max-height: 280px;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    object-fit: cover;
+    object-position: center;
+}
+
+.vtv-top-hero-area.is-fullwidth .vtv-slot-topHero .vtv-spotlight-media,
+.vtv-top-hero-area.is-fullwidth .vtv-slot-topHero .vtv-spotlight-img {
+    border-radius: 0;
+    box-shadow: none;
+    max-height: 300px;
+}
+
+/* Height presets */
+.vtv-top-hero-area.hero-height-compact .vtv-slot-topHero .vtv-spotlight-media,
+.vtv-top-hero-area.hero-height-compact .vtv-slot-topHero .vtv-spotlight-img {
+    max-height: 200px;
+}
+
+.vtv-top-hero-area.hero-height-medium .vtv-slot-topHero .vtv-spotlight-media,
+.vtv-top-hero-area.hero-height-medium .vtv-slot-topHero .vtv-spotlight-img {
+    max-height: 280px;
+}
+
+.vtv-top-hero-area.hero-height-standard .vtv-slot-topHero .vtv-spotlight-media,
+.vtv-top-hero-area.hero-height-standard .vtv-slot-topHero .vtv-spotlight-img {
+    max-height: 350px;
+}
+
+.vtv-top-hero-area.hero-height-natural .vtv-slot-topHero .vtv-spotlight-media,
+.vtv-top-hero-area.hero-height-natural .vtv-slot-topHero .vtv-spotlight-img {
+    max-height: none;
+}
+
+@media (max-width: 768px) {
+    .vtv-top-hero-area {
+        padding: 6px 0;
+    }
+    .vtv-top-hero-area:not(.is-fullwidth) .container-fluid {
+        padding: 0 8px;
+    }
+    .vtv-top-hero-area .vtv-slot-topHero .vtv-spotlight-media,
+    .vtv-top-hero-area .vtv-slot-topHero .vtv-spotlight-img {
+        border-radius: 6px;
+        max-height: 180px;
+    }
+}
+
+/* ==========================================================================
    6. Main Navigation Bar
    ========================================================================== */
 .mg-menu-full {
