@@ -4986,21 +4986,7 @@ body.dark .post-content [style*="background-color"] {
     right: 12px;
 }
 
-.vtv-slideshow-prev::before {
-    content: "❮";
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffffff;
-    line-height: 1;
-}
 
-.vtv-slideshow-next::before {
-    content: "❯";
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffffff;
-    line-height: 1;
-}
 
 
 .vtv-slideshow-badge {
@@ -5020,9 +5006,7 @@ body.dark .post-content [style*="background-color"] {
     -webkit-backdrop-filter: blur(4px);
 }
 
-.vtv-slideshow-badge::before {
-    content: attr(data-slide) " / " attr(data-total);
-}
+
 
 .vtv-slideshow-caption {
     position: absolute;
