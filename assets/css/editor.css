@@ -7,3 +7,14 @@
     line-height: 1.7;
     color: #212529;
 }
+
+.post__iframe,
+.post__video,
+.video-container {
+    max-width: 100%;
+    margin: 1.5rem 0;
+}
+
+iframe, embed, object, video {
+    max-width: 100%;
+}

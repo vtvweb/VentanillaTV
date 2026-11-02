@@ -1096,6 +1096,206 @@
         window.addEventListener('hashchange', populateQuery);
     };
 
+    // 14. Responsive Embeds & Videos Handler
+    var supportsCssAspectRatio = function () {
+        return !!(window.CSS && window.CSS.supports && window.CSS.supports('aspect-ratio', '16 / 9'));
+    };
+
+    var isVideoEmbedSrc = function (src) {
+        if (!src) return false;
+        return src.indexOf('youtube.com') > -1 ||
+               src.indexOf('youtube-nocookie.com') > -1 ||
+               src.indexOf('vimeo.com') > -1 ||
+               src.indexOf('dailymotion.com') > -1;
+    };
+
+    // Size a video iframe from its own width/height attributes instead of
+    // forcing 16:9. This keeps portrait videos (YouTube Shorts, Reels) intact.
+    var applyVideoIframeRatio = function (frame) {
+        if (!supportsCssAspectRatio()) return;
+        if (frame.getAttribute('data-responsive') === 'false') return;
+
+        var w = frame.getAttribute('width');
+        var h = frame.getAttribute('height');
+        var iw = 0;
+        var ih = 0;
+
+        if (w && h && w.indexOf('%') === -1 && h.indexOf('%') === -1) {
+            iw = parseInt(w, 10);
+            ih = parseInt(h, 10);
+        }
+        if (!(iw > 0 && ih > 0)) {
+            iw = 16;
+            ih = 9;
+        }
+
+        frame.style.aspectRatio = iw + ' / ' + ih;
+        frame.style.width = '100%';
+        frame.style.height = 'auto';
+        frame.style.maxWidth = '100%';
+
+        var wrapper = frame.closest ? frame.closest('.post__iframe, .post__video, .video-container, .wp-block-embed__wrapper') : null;
+        if (wrapper) {
+            if (ih > iw) {
+                // Cap very tall portrait videos on wide screens (~640px tall max)
+                wrapper.style.maxWidth = Math.round(640 * iw / ih) + 'px';
+                wrapper.style.marginLeft = 'auto';
+                wrapper.style.marginRight = 'auto';
+            } else {
+                wrapper.style.maxWidth = '';
+                wrapper.style.marginLeft = '';
+                wrapper.style.marginRight = '';
+            }
+        }
+    };
+
+    // Instagram sends a MEASURE postMessage with the real card height once its
+    // iframe lays out. Without this, embeds stretched to 100% width get clipped.
+    var initEmbedHeightSync = function () {
+        if (window.__vtvEmbedHeightSync) return;
+        window.__vtvEmbedHeightSync = true;
+
+        window.addEventListener('message', function (event) {
+            var origin = event.origin || '';
+            if (origin.indexOf('instagram.com') === -1) return;
+
+            var data = event.data;
+            if (typeof data === 'string') {
+                try { data = JSON.parse(data); } catch (e) { return; }
+            }
+            if (!data || data.type !== 'MEASURE' || !data.details) return;
+
+            var height = parseInt(data.details.height, 10);
+            if (!(height > 0)) return;
+
+            var frames = document.querySelectorAll('iframe[src*="instagram.com"]');
+            for (var i = 0; i < frames.length; i++) {
+                if (frames[i].contentWindow === event.source) {
+                    frames[i].style.height = height + 'px';
+                }
+            }
+        });
+    };
+
+    var initResponsiveEmbeds = function () {
+        var contentContainers = document.querySelectorAll('.post-content, .post-main-box');
+        if (!contentContainers.length) return;
+
+        for (var c = 0; c < contentContainers.length; c++) {
+            var container = contentContainers[c];
+
+            // 1. Process existing .post__iframe, .post__video, and .video-container wrappers
+            var wrappers = container.querySelectorAll('.post__iframe, .post__video, .video-container, .wp-block-embed__wrapper');
+            for (var i = 0; i < wrappers.length; i++) {
+                var wrapper = wrappers[i];
+                var embed = wrapper.querySelector('iframe, embed, video, object');
+                if (!embed) continue;
+                if (embed.getAttribute('data-responsive') === 'false') continue;
+
+                // Video iframes: respect their intrinsic width/height ratio
+                if (isVideoEmbedSrc(embed.src || '')) {
+                    applyVideoIframeRatio(embed);
+                }
+
+                // Skip social embeds that manage their own dynamic card height (Instagram, Twitter)
+                if (embed.classList.contains('instagram-media') ||
+                    (embed.src && (embed.src.indexOf('instagram.com') > -1 || embed.src.indexOf('twitter.com') > -1))) {
+                    continue;
+                }
+
+                var w = embed.getAttribute('width');
+                var h = embed.getAttribute('height');
+                var ratio = false;
+
+                if (w && h) {
+                    if (w.indexOf('%') > -1 && h.indexOf('%') > -1) {
+                        var pw = parseFloat(w.replace('%', ''));
+                        var ph = parseFloat(h.replace('%', ''));
+                        if (pw > 0) ratio = ph / pw;
+                    } else if (w.indexOf('%') === -1 && h.indexOf('%') === -1) {
+                        var iw = parseInt(w, 10);
+                        var ih = parseInt(h, 10);
+                        if (iw > 0) ratio = ih / iw;
+                    }
+                }
+
+                if (ratio !== false) {
+                    var ratioValue = (ratio * 100).toFixed(4) + '%';
+                    wrapper.style.setProperty('--embed-aspect-ratio', ratioValue);
+                } else if (embed.src && (embed.src.indexOf('youtube.com') > -1 ||
+                                         embed.src.indexOf('youtube-nocookie.com') > -1 ||
+                                         embed.src.indexOf('vimeo.com') > -1)) {
+                    // Default 16:9 for YouTube/Vimeo without explicit px attributes
+                    // NOTE: Facebook excluded - aspect-ratio tricks break show_text=false
+                    wrapper.style.setProperty('--embed-aspect-ratio', '56.25%');
+                }
+            }
+
+            // 2. Wrap any unwrapped video iframes (YouTube, Vimeo, Facebook video)
+            var unwrappedIframes = container.querySelectorAll('iframe:not(.instagram-media)');
+            for (var j = 0; j < unwrappedIframes.length; j++) {
+                var ifr = unwrappedIframes[j];
+                if (ifr.closest('.post__iframe') ||
+                    ifr.closest('.post__video') ||
+                    ifr.closest('.video-container') ||
+                    ifr.closest('.wp-block-embed__wrapper') ||
+                    ifr.closest('.twitter-tweet') ||
+                    ifr.closest('.tiktok-embed') ||
+                    ifr.closest('.vtv-slideshow') ||
+                    ifr.closest('.vtv-spotlight-frame')) {
+                    continue;
+                }
+
+                var src = ifr.getAttribute('src') || '';
+                var isVideo = src.indexOf('youtube.com') > -1 ||
+                              src.indexOf('youtube-nocookie.com') > -1 ||
+                              src.indexOf('vimeo.com') > -1 ||
+                              src.indexOf('dailymotion.com') > -1;
+                // NOTE: facebook.com/plugins/video excluded from auto-wrap
+                // Wrapping those iframes triggers aspect-ratio CSS that breaks show_text=false
+
+                if (isVideo) {
+                    var parentNode = ifr.parentNode;
+                    var newWrap = document.createElement('div');
+                    newWrap.className = 'post__iframe';
+                    var width = ifr.getAttribute('width');
+                    var height = ifr.getAttribute('height');
+                    var r = 0.5625;
+                    if (width && height && width.indexOf('%') === -1 && height.indexOf('%') === -1) {
+                        var numW = parseInt(width, 10);
+                        var numH = parseInt(height, 10);
+                        if (numW > 0) r = numH / numW;
+                    }
+                    newWrap.style.setProperty('--embed-aspect-ratio', (r * 100).toFixed(4) + '%');
+                    parentNode.insertBefore(newWrap, ifr);
+                    newWrap.appendChild(ifr);
+                    applyVideoIframeRatio(ifr);
+                }
+            }
+
+            // 3. Fix inline styles on TikTok blockquotes
+            var tiktokEmbeds = container.querySelectorAll('.tiktok-embed, blockquote.tiktok-embed');
+            for (var k = 0; k < tiktokEmbeds.length; k++) {
+                tiktokEmbeds[k].style.minWidth = '0';
+                tiktokEmbeds[k].style.maxWidth = '100%';
+                tiktokEmbeds[k].style.width = '100%';
+            }
+
+            // 4. Fix inline styles on Instagram blockquotes and iframes
+            var instaEmbeds = container.querySelectorAll('.instagram-media, blockquote.instagram-media, iframe.instagram-media');
+            for (var m = 0; m < instaEmbeds.length; m++) {
+                instaEmbeds[m].style.minWidth = '0';
+                instaEmbeds[m].style.maxWidth = '100%';
+                instaEmbeds[m].style.width = '100%';
+                instaEmbeds[m].style.marginLeft = 'auto';
+                instaEmbeds[m].style.marginRight = 'auto';
+            }
+        }
+    };
+
+    // Attach early so Instagram's initial MEASURE message is not missed
+    initEmbedHeightSync();
+
     // Run on DOM ready
     var onDomReady = function () {
         initThemeToggle();
@@ -1112,6 +1312,7 @@
         initTickerSync();
         initStickyAds();
         initSearchPageQuery();
+        initResponsiveEmbeds();
     };
 
     if (document.readyState === 'loading') {
@@ -1119,4 +1320,5 @@
     } else {
         onDomReady();
     }
+    window.addEventListener('load', initResponsiveEmbeds);
 })();

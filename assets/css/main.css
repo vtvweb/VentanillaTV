@@ -50,6 +50,10 @@ img, svg, picture, video {
     height: auto;
 }
 
+iframe, embed, object {
+    max-width: 100%;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -2101,6 +2105,141 @@ body.dark .ticker-item a:hover {
     background-color: rgba(0, 0, 0, 0.04);
     font-weight: 700;
 }
+
+/* ==========================================================================
+   Responsive Embeds, Videos, Social Media & Iframes
+   ========================================================================== */
+.post__iframe,
+.post__video,
+.video-container,
+.wp-block-embed__wrapper {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+    box-sizing: border-box;
+}
+/* Fallback 16:9 only for video iframes that do not declare their own size.
+   Iframes with width/height attributes keep their intrinsic ratio and are
+   sized by scripts.js (this preserves portrait YouTube Shorts/Reels). */
+@supports (aspect-ratio: 16 / 9) {
+    .post-content iframe[src*="youtube.com/embed"]:not([width]),
+    .post-content iframe[src*="youtube-nocookie.com/embed"]:not([width]),
+    .post-content iframe[src*="player.vimeo.com"]:not([width]),
+    .post-content iframe[src*="dailymotion.com/embed"]:not([width]) {
+        aspect-ratio: 16 / 9;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+
+
+/* Ensure all iframes inside content respect max-width and never overflow */
+.post-content iframe,
+.post-content embed,
+.post-content object,
+.post-content video {
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+
+
+/* Social Embeds: TikTok */
+.post-content .tiktok-embed,
+.post-content blockquote.tiktok-embed,
+.post-content iframe[src*="tiktok.com"] {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Social Embeds: Twitter / X */
+.post-content blockquote.twitter-tweet,
+.post-content .twitter-tweet,
+.post-content .twitter-tweet-rendered,
+.post-content iframe[id^="twitter-widget-"],
+.post-content iframe[src*="platform.twitter.com"],
+.post-content iframe[src*="twitter.com"],
+.post-content iframe[src*="x.com"],
+.post-content figure.wp-block-embed-twitter {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Social Embeds: Instagram */
+.post-content blockquote.instagram-media,
+.post-content iframe.instagram-media,
+.post-content iframe[src*="instagram.com"] {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Social Embeds: Facebook */
+.post-content .fb-post,
+.post-content .fb-video,
+.post-content .fb-page,
+.post-content iframe[src*="facebook.com"] {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+.post-content .fb-post iframe,
+.post-content .fb-video iframe,
+.post-content .fb-page iframe {
+    max-width: 100% !important;
+}
+
+/* Google Drive / PDF Viewer Embeds */
+.post-content iframe[src*="drive.google.com"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 380px;
+}
+
+/* Elecciones / Interactive Widget Embeds */
+.post-content iframe[src*="elecciones.ventanillatv.pe"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 300px;
+}
+
+/* Gutenberg / WordPress Embed Blocks */
+.post-content figure.wp-block-embed,
+.post-content figure.wp-block-video,
+.post-content figure.is-type-video {
+    max-width: 100%;
+    width: 100%;
+    margin: 1.5rem auto;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.post-content figure.wp-block-video video,
+.post-content video {
+    max-width: 100% !important;
+    height: auto;
+    display: block;
+    border-radius: 6px;
+}
+
+/* Spotlight & Ad Slot Containment */
+.vtv-spotlight-frame iframe,
+.vtv-spotlight-frame embed,
+.vtv-spotlight-frame video {
+    max-width: 100% !important;
+}
+
 
 /* ==========================================================================
    Editorial & Content Hyperlinks - Ventanilla TV Highlighted Style
@@ -4402,6 +4541,26 @@ body.dock-dismissed footer {
     .vtv-slot-header .vtv-spotlight-tag,
     .publii-ad-header .publii-ad-label {
         text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .post-main-box {
+        padding: 22px 18px;
+        overflow-x: hidden;
+    }
+    .post-content {
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    .post-content iframe[src*="drive.google.com"] {
+        min-height: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-main-box {
+        padding: 18px 12px;
     }
 }
 
