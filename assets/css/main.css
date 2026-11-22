@@ -192,11 +192,13 @@ p:last-child {
     text-decoration: none !important;
     padding: 3px 9px;
     border-radius: 4px;
+    border: 1px solid transparent;
+    box-sizing: border-box;
     font-weight: 700;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    transition: all 0.2s ease-in-out;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     cursor: default;
 }
 
@@ -243,9 +245,15 @@ p:last-child {
 }
 
 .info-left .time-badge.is-offline {
-    background-color: rgba(100, 116, 139, 0.2) !important;
-    color: var(--text-color, #64748b) !important;
-    border: 1px solid rgba(148, 163, 184, 0.25);
+    background-color: rgba(245, 158, 11, 0.16) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(245, 158, 11, 0.45);
+}
+
+.info-left a.time-badge.is-offline:hover {
+    background-color: rgba(245, 158, 11, 0.28) !important;
+    border-color: rgba(251, 191, 36, 0.7);
+    color: #fef08a !important;
 }
 
 .info-left .time-badge.is-offline .live-dot {
@@ -1269,6 +1277,8 @@ body.dark .ticker-item a:hover {
     left: 0;
     inset: 0;
     background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.85) 100%);
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.85) 100%);
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.85) 100%);
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.85) 100%);
     -webkit-transition: opacity 0.3s ease;
     transition: opacity 0.3s ease;
